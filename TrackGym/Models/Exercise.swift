@@ -1,0 +1,34 @@
+import Foundation
+import SwiftData
+
+@Model
+final class Exercise {
+    var name: String
+    var muscleGroupRaw: String
+    var equipmentTypeRaw: String
+    var isCustom: Bool
+    var imageURL: String?
+
+    @Relationship(deleteRule: .cascade, inverse: \WorkoutEntry.exercise)
+    var workoutEntries: [WorkoutEntry] = []
+
+    @Relationship(inverse: \WorkoutPlan.exercises)
+    var workoutPlans: [WorkoutPlan] = []
+
+    var muscleGroup: MuscleGroup {
+        get { MuscleGroup(rawValue: muscleGroupRaw) ?? .chest }
+        set { muscleGroupRaw = newValue.rawValue }
+    }
+
+    var equipmentType: EquipmentType {
+        get { EquipmentType(rawValue: equipmentTypeRaw) ?? .machine }
+        set { equipmentTypeRaw = newValue.rawValue }
+    }
+
+    init(name: String, muscleGroup: MuscleGroup, equipmentType: EquipmentType, isCustom: Bool = false) {
+        self.name = name
+        self.muscleGroupRaw = muscleGroup.rawValue
+        self.equipmentTypeRaw = equipmentType.rawValue
+        self.isCustom = isCustom
+    }
+}

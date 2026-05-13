@@ -262,6 +262,7 @@ struct SettingsView: View {
             alertMessage = "Fortschritte gelöscht."
             showingAlert = true
         } catch {
+            modelContext.rollback()
             alertMessage = "Löschen fehlgeschlagen: \(error.localizedDescription)"
             showingAlert = true
         }
@@ -281,6 +282,7 @@ struct SettingsView: View {
             alertMessage = "Alle Daten gelöscht."
             showingAlert = true
         } catch {
+            modelContext.rollback()
             alertMessage = "Löschen fehlgeschlagen: \(error.localizedDescription)"
             showingAlert = true
         }

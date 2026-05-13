@@ -16,12 +16,12 @@ final class Exercise {
     var workoutPlans: [WorkoutPlan] = []
 
     var muscleGroup: MuscleGroup {
-        get { MuscleGroup(rawValue: muscleGroupRaw) ?? .chest }
+        get { MuscleGroup(rawValue: muscleGroupRaw) ?? .unknown }
         set { muscleGroupRaw = newValue.rawValue }
     }
 
     var equipmentType: EquipmentType {
-        get { EquipmentType(rawValue: equipmentTypeRaw) ?? .machine }
+        get { EquipmentType(rawValue: equipmentTypeRaw) ?? .unknown }
         set { equipmentTypeRaw = newValue.rawValue }
     }
 

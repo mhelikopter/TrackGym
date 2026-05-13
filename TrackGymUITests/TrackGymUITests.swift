@@ -23,12 +23,13 @@ final class TrackGymUITests: XCTestCase {
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    func test_appLaunchesAndShowsRootView() throws {
         let app = XCUIApplication()
         app.launch()
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        // The root ContentView renders a TabView with three tabs.
+        // Verify the tab bar is present so the launch smoke test has a real assertion.
+        XCTAssertTrue(app.tabBars.firstMatch.exists, "Tab bar should be visible after app launch")
     }
 
     @MainActor

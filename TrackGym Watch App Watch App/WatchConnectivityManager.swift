@@ -32,10 +32,27 @@ final class WatchConnectivityManager: NSObject, WCSessionDelegate {
             "reps": reps,
             "exerciseName": exerciseName
         ]
-        WCSession.default.sendMessage(message, replyHandler: nil)
+        // Prefer immediate delivery; fall back to a guaranteed queued transfer
+        // so a set logged while the phone is briefly unreachable is not lost.
+        if WCSession.default.isReachable {
+            WCSession.default.sendMessage(message, replyHandler: nil) { error in
+                NSLog("addSet sendMessage failed, queuing: %@", error.localizedDescription)
+                WCSession.default.transferUserInfo(message)
+            }
+        } else {
+            WCSession.default.transferUserInfo(message)
+        }
     }
 
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+        applyState(message)
+    }
+
+    func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
+        applyState(applicationContext)
+    }
+
+    private func applyState(_ message: [String: Any]) {
         Task { @MainActor in
             guard let type = message["type"] as? String else { return }
             switch type {

@@ -17,26 +17,46 @@ final class PhoneConnectivityManager: NSObject, WCSessionDelegate {
     }
 
     func sendActiveExercise(name: String, muscleGroup: String, unit: String, sets: [WatchSetPayload]) {
-        guard WCSession.default.isReachable else { return }
         let setsDicts: [[String: Any]] = sets.map {
             ["setNumber": $0.setNumber, "weight": $0.weight, "reps": $0.reps]
         }
-        let message: [String: Any] = [
+        let payload: [String: Any] = [
             "type": "activeExercise",
             "exerciseName": name,
             "muscleGroup": muscleGroup,
             "unit": unit,
             "sets": setsDicts
         ]
-        WCSession.default.sendMessage(message, replyHandler: nil)
+        pushState(payload)
     }
 
     func sendWorkoutEnded() {
+        pushState(["type": "workoutEnded"])
+    }
+
+    private func pushState(_ payload: [String: Any]) {
+        // Application context survives unreachability and is replayed on watch wake.
+        do {
+            try WCSession.default.updateApplicationContext(payload)
+        } catch {
+            NSLog("updateApplicationContext failed: %@", error.localizedDescription)
+        }
+        // Best-effort immediate delivery when the watch is awake and reachable.
         guard WCSession.default.isReachable else { return }
-        WCSession.default.sendMessage(["type": "workoutEnded"], replyHandler: nil)
+        WCSession.default.sendMessage(payload, replyHandler: nil) { error in
+            NSLog("sendMessage state failed: %@", error.localizedDescription)
+        }
     }
 
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+        forwardAddSet(message)
+    }
+
+    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
+        forwardAddSet(userInfo)
+    }
+
+    private func forwardAddSet(_ message: [String: Any]) {
         guard let type = message["type"] as? String, type == "addSet",
               let weight = message["weight"] as? Double,
               let reps = message["reps"] as? Int else { return }

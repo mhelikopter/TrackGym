@@ -69,24 +69,7 @@ struct ExerciseListView: View {
                 }
 
                 ForEach(sortedMuscleGroups) { muscleGroup in
-                    Section {
-                        let exercisesInGroup = (groupedByMuscle[muscleGroup] ?? []).sorted { $0.name < $1.name }
-                        ForEach(exercisesInGroup) { exercise in
-                            ExerciseRow(exercise: exercise)
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    if exercise.isCustom {
-                                        Button(role: .destructive) {
-                                            deleteExercise(exercise)
-                                        } label: {
-                                            Label("Löschen", systemImage: "trash")
-                                        }
-                                    }
-                                }
-                        }
-                    } header: {
-                        Label(muscleGroup.displayName, systemImage: muscleGroup.icon)
-                            .font(.headline)
-                    }
+                    muscleSection(for: muscleGroup)
                 }
             }
             .navigationTitle("Übungen")
@@ -114,6 +97,28 @@ struct ExerciseListView: View {
     private func deleteExercise(_ exercise: Exercise) {
         withAnimation {
             modelContext.delete(exercise)
+        }
+    }
+
+    @ViewBuilder
+    private func muscleSection(for muscleGroup: MuscleGroup) -> some View {
+        let exercisesInGroup = (groupedByMuscle[muscleGroup] ?? []).sorted { $0.name < $1.name }
+        Section {
+            ForEach(exercisesInGroup) { exercise in
+                ExerciseRow(exercise: exercise)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        if exercise.isCustom {
+                            Button(role: .destructive) {
+                                deleteExercise(exercise)
+                            } label: {
+                                Label("Löschen", systemImage: "trash")
+                            }
+                        }
+                    }
+            }
+        } header: {
+            Label(muscleGroup.displayName, systemImage: muscleGroup.icon)
+                .font(.headline)
         }
     }
 }

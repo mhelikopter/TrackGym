@@ -71,40 +71,7 @@ struct ExercisePickerView: View {
                 }
 
                 ForEach(sortedMuscleGroups) { muscleGroup in
-                    Section {
-                        let exercisesInGroup = (groupedByMuscle[muscleGroup] ?? []).sorted { $0.name < $1.name }
-                        ForEach(exercisesInGroup) { exercise in
-                            Button {
-                                toggleSelection(exercise)
-                            } label: {
-                                HStack(spacing: 12) {
-                                    ExerciseImageView(exercise: exercise, size: 40)
-
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(exercise.name)
-                                            .foregroundStyle(.primary)
-                                        Text(exercise.equipmentType.displayName)
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                    }
-
-                                    Spacer()
-
-                                    if isSelected(exercise) {
-                                        Image(systemName: "checkmark.circle.fill")
-                                            .foregroundStyle(.blue)
-                                            .font(.title3)
-                                    } else {
-                                        Image(systemName: "circle")
-                                            .foregroundStyle(.secondary)
-                                            .font(.title3)
-                                    }
-                                }
-                            }
-                        }
-                    } header: {
-                        Label(muscleGroup.displayName, systemImage: muscleGroup.icon)
-                    }
+                    muscleSection(for: muscleGroup)
                 }
             }
             .navigationTitle("Übungen wählen")
@@ -142,6 +109,44 @@ struct ExercisePickerView: View {
 
     private func isSelected(_ exercise: Exercise) -> Bool {
         selectedExercises.contains { $0.persistentModelID == exercise.persistentModelID }
+    }
+
+    @ViewBuilder
+    private func muscleSection(for muscleGroup: MuscleGroup) -> some View {
+        let exercisesInGroup = (groupedByMuscle[muscleGroup] ?? []).sorted { $0.name < $1.name }
+        Section {
+            ForEach(exercisesInGroup) { exercise in
+                Button {
+                    toggleSelection(exercise)
+                } label: {
+                    HStack(spacing: 12) {
+                        ExerciseImageView(exercise: exercise, size: 40)
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(exercise.name)
+                                .foregroundStyle(.primary)
+                            Text(exercise.equipmentType.displayName)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
+
+                        if isSelected(exercise) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(.blue)
+                                .font(.title3)
+                        } else {
+                            Image(systemName: "circle")
+                                .foregroundStyle(.secondary)
+                                .font(.title3)
+                        }
+                    }
+                }
+            }
+        } header: {
+            Label(muscleGroup.displayName, systemImage: muscleGroup.icon)
+        }
     }
 }
 

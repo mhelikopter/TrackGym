@@ -6,6 +6,8 @@ enum MuscleGroup: String, Codable, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    static var selectableCases: [Self] { allCases.filter { $0 != .unknown } }
+
     var displayName: String {
         switch self {
         case .chest: "Brust"

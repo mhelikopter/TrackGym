@@ -172,20 +172,12 @@ struct ActiveWorkoutView: View {
     }
 
     private func findPreviousEntry(for exercise: Exercise?) -> WorkoutEntry? {
-        guard let exercise else { return nil }
-        let exerciseName = exercise.name
-        var descriptor = FetchDescriptor<WorkoutEntry>(
-            predicate: #Predicate { $0.exercise?.name == exerciseName },
-            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        WorkoutHistory.previousEntry(
+            for: exercise,
+            in: modelContext,
+            excluding: workoutEntries,
+            activeWorkout: activeWorkout
         )
-        descriptor.fetchLimit = 5
-        let entries = (try? modelContext.fetch(descriptor)) ?? []
-        let currentIDs = Set(workoutEntries.map(\.persistentModelID))
-        let activeID = activeWorkout?.persistentModelID
-        return entries.first { entry in
-            !currentIDs.contains(entry.persistentModelID) &&
-            (activeID == nil || entry.workout?.persistentModelID != activeID)
-        }
     }
 
     private func saveEntry(_ entry: WorkoutEntry) {
@@ -254,10 +246,7 @@ struct ActiveWorkoutView: View {
     }
 
     private func addSetFromWatch(to entry: WorkoutEntry, weight: Double, reps: Int) {
-        let nextNumber = (entry.sets.map(\.setNumber).max() ?? 0) + 1
-        let newSet = WorkoutSet(setNumber: nextNumber, weight: weight, reps: reps, workoutEntry: entry)
-        modelContext.insert(newSet)
-        entry.sets.append(newSet)
+        WorkoutHistory.appendSet(weight: weight, reps: reps, to: entry, in: modelContext)
         sendCurrentExerciseToWatch()
     }
 }

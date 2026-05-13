@@ -4,7 +4,7 @@ import SwiftData
 @Model
 final class WorkoutPlan {
     var name: String
-    @Relationship(deleteRule: .nullify, inverse: \Exercise.workoutPlans)
+    @Relationship(deleteRule: .nullify)
     var exercises: [Exercise] = []
 
     init(name: String) {

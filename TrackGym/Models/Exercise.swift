@@ -9,7 +9,7 @@ final class Exercise {
     var isCustom: Bool
     var imageURL: String?
 
-    @Relationship(deleteRule: .cascade, inverse: \WorkoutEntry.exercise)
+    @Relationship(deleteRule: .nullify, inverse: \WorkoutEntry.exercise)
     var workoutEntries: [WorkoutEntry] = []
 
     @Relationship(inverse: \WorkoutPlan.exercises)

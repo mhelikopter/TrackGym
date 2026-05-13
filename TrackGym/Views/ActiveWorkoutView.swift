@@ -184,6 +184,7 @@ struct ActiveWorkoutView: View {
         let seconds = elapsedSeconds(now: Date())
         if activeWorkout == nil {
             let workout = Workout(name: plan.name, date: workoutDate, duration: seconds)
+            workout.plan = plan
             modelContext.insert(workout)
             activeWorkout = workout
         } else {
@@ -208,6 +209,7 @@ struct ActiveWorkoutView: View {
         let seconds = elapsedSeconds(now: Date())
         if activeWorkout == nil && !workoutEntries.isEmpty {
             let workout = Workout(name: plan.name, date: workoutDate, duration: seconds)
+            workout.plan = plan
             modelContext.insert(workout)
             activeWorkout = workout
         } else {

@@ -1,61 +1,40 @@
-//
-//  ContentView.swift
-//  TrackGym
-//
-//  Created by Maximilian Ehling on 14.02.26.
-//
-
 import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @AppStorage("appColorScheme") private var appColorScheme: String = AppColorScheme.system.rawValue
+
+    private var colorScheme: ColorScheme? {
+        (AppColorScheme(rawValue: appColorScheme) ?? .system).colorScheme
+    }
+
+    @State private var selectedTab = 1
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
+        TabView(selection: $selectedTab) {
+            ExerciseListView()
+                .tag(0)
+                .tabItem {
+                    Label("Übungen", systemImage: "dumbbell.fill")
                 }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-        } detail: {
-            Text("Select an item")
-        }
-    }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
+            WorkoutView()
+                .tag(1)
+                .tabItem {
+                    Label("Meine Trainings", systemImage: "figure.strengthtraining.traditional")
+                }
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
+            ProgressTabView()
+                .tag(2)
+                .tabItem {
+                    Label("Fortschritt", systemImage: "chart.line.uptrend.xyaxis")
+                }
         }
+        .preferredColorScheme(colorScheme)
     }
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: [Exercise.self, WorkoutEntry.self, WorkoutSet.self, WorkoutPlan.self, Workout.self], inMemory: true)
 }

@@ -1,31 +1,32 @@
-//
-//  TrackGymApp.swift
-//  TrackGym
-//
-//  Created by Maximilian Ehling on 14.02.26.
-//
-
 import SwiftUI
 import SwiftData
 
 @main
 struct TrackGymApp: App {
-    var sharedModelContainer: ModelContainer = {
+    let sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Exercise.self,
+            WorkoutEntry.self,
+            WorkoutSet.self,
+            WorkoutPlan.self,
+            Workout.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            fatalError("ModelContainer konnte nicht geladen werden: \(error). Eine Migration ist evtl. erforderlich.")
         }
     }()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onAppear {
+                    DefaultExercises.seedDefaultExercises(context: sharedModelContainer.mainContext)
+                    PhoneConnectivityManager.shared.activate()
+                }
         }
         .modelContainer(sharedModelContainer)
     }

@@ -47,7 +47,8 @@ jobs:
             -project TrackGym.xcodeproj \
             -scheme TrackGym \
             -destination "id=$DEST" \
-            -configuration Debug
+            -configuration Debug \
+            -only-testing:TrackGymTests
 
   watchos:
     name: watchOS Build

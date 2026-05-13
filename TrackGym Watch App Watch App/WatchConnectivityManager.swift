@@ -19,6 +19,7 @@ final class WatchConnectivityManager: NSObject, WCSessionDelegate {
     var unit: String = "kg"
     var sets: [WatchSet] = []
     var workoutActive: Bool = false
+    var isReachable: Bool = false
 
     func activate() {
         WCSession.default.delegate = self
@@ -78,5 +79,27 @@ final class WatchConnectivityManager: NSObject, WCSessionDelegate {
         }
     }
 
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {}
+    /// Clears workout state locally without requiring the phone to be reachable.
+    /// Use this as an escape hatch when the phone process was killed mid-workout
+    /// and the watch is stuck with workoutActive = true.
+    @MainActor
+    func clearLocalState() {
+        workoutActive = false
+        exerciseName = ""
+        muscleGroup = ""
+        unit = "kg"
+        sets = []
+    }
+
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        Task { @MainActor in
+            self.isReachable = session.isReachable
+        }
+    }
+
+    func sessionReachabilityDidChange(_ session: WCSession) {
+        Task { @MainActor in
+            self.isReachable = session.isReachable
+        }
+    }
 }

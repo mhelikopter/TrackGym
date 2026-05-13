@@ -9,12 +9,13 @@ import SwiftUI
 
 @main
 struct TrackGym_Watch_App_Watch_AppApp: App {
+    init() {
+        WatchConnectivityManager.shared.activate()
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .onAppear {
-                    WatchConnectivityManager.shared.activate()
-                }
         }
     }
 }

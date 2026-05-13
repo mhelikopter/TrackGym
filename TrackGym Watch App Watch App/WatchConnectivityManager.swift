@@ -52,7 +52,7 @@ final class WatchConnectivityManager: NSObject, WCSessionDelegate {
         applyState(applicationContext)
     }
 
-    private func applyState(_ message: [String: Any]) {
+    func applyState(_ message: [String: Any]) {
         Task { @MainActor in
             guard let type = message["type"] as? String else { return }
             switch type {

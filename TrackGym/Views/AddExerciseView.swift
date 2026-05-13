@@ -20,13 +20,13 @@ struct AddExerciseView: View {
                     TextField("Name der Übung", text: $name)
 
                     Picker("Muskelgruppe", selection: $selectedMuscleGroup) {
-                        ForEach(MuscleGroup.allCases) { group in
+                        ForEach(MuscleGroup.selectableCases) { group in
                             Text(group.displayName).tag(group)
                         }
                     }
 
                     Picker("Gerätetyp", selection: $selectedEquipmentType) {
-                        ForEach(EquipmentType.allCases) { type in
+                        ForEach(EquipmentType.selectableCases) { type in
                             Text(type.displayName).tag(type)
                         }
                     }

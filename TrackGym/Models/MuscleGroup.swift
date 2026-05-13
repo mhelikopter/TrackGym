@@ -2,8 +2,11 @@ import Foundation
 
 enum MuscleGroup: String, Codable, CaseIterable, Identifiable {
     case chest, back, shoulders, arms, legs, core
+    case unknown
 
     var id: String { rawValue }
+
+    static var selectableCases: [Self] { allCases.filter { $0 != .unknown } }
 
     var displayName: String {
         switch self {
@@ -13,6 +16,7 @@ enum MuscleGroup: String, Codable, CaseIterable, Identifiable {
         case .arms: "Arme"
         case .legs: "Beine"
         case .core: "Core"
+        case .unknown: "Unbekannt"
         }
     }
 
@@ -24,6 +28,7 @@ enum MuscleGroup: String, Codable, CaseIterable, Identifiable {
         case .arms: "dumbbell.fill"
         case .legs: "figure.walk"
         case .core: "figure.core.training"
+        case .unknown: "questionmark.circle"
         }
     }
 }

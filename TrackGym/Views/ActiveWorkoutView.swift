@@ -239,7 +239,7 @@ struct ActiveWorkoutView: View {
         }
         PhoneConnectivityManager.shared.sendActiveExercise(
             name: exercise.name,
-            muscleGroup: exercise.muscleGroup.displayName,
+            muscleGroup: exercise.muscleGroup.rawValue,
             unit: weightUnit,
             sets: payload
         )

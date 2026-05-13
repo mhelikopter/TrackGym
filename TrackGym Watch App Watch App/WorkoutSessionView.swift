@@ -60,14 +60,16 @@ struct WorkoutSessionView: View {
     }
 
     private var muscleIcon: String {
+        // Switch on MuscleGroup.rawValue (stable English identifier sent by the phone)
+        // rather than the localised displayName so icon mapping is locale-independent.
         switch connectivity.muscleGroup {
-        case "Brust": return "figure.strengthtraining.traditional"
-        case "Rücken": return "figure.rowing"
-        case "Schultern": return "figure.arms.open"
-        case "Arme": return "dumbbell.fill"
-        case "Beine": return "figure.walk"
-        case "Core": return "figure.core.training"
-        default: return "figure.strengthtraining.traditional"
+        case "chest":     return "figure.strengthtraining.traditional"
+        case "back":      return "figure.rowing"
+        case "shoulders": return "figure.arms.open"
+        case "arms":      return "dumbbell.fill"
+        case "legs":      return "figure.walk"
+        case "core":      return "figure.core.training"
+        default:          return "figure.strengthtraining.traditional"
         }
     }
 }

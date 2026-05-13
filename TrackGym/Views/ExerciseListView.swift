@@ -8,6 +8,7 @@ struct ExerciseListView: View {
     @State private var showingAddExercise = false
     @State private var selectedMuscleGroup: MuscleGroup?
     @State private var selectedEquipmentType: EquipmentType?
+    @State private var exerciseToDelete: Exercise?
 
     private var filteredExercises: [Exercise] {
         let trimmedSearch = searchText.trimmingCharacters(in: .whitespaces)
@@ -86,6 +87,25 @@ struct ExerciseListView: View {
             .sheet(isPresented: $showingAddExercise) {
                 AddExerciseView()
             }
+            .confirmationDialog(
+                "Übung löschen?",
+                isPresented: Binding(
+                    get: { exerciseToDelete != nil },
+                    set: { if !$0 { exerciseToDelete = nil } }
+                ),
+                titleVisibility: .visible
+            ) {
+                Button("Übung löschen", role: .destructive) {
+                    if let exercise = exerciseToDelete {
+                        deleteExercise(exercise)
+                    }
+                }
+                Button("Abbrechen", role: .cancel) {
+                    exerciseToDelete = nil
+                }
+            } message: {
+                Text("Die Übung und alle zugehörigen Trainingseinträge werden unwiderruflich gelöscht.")
+            }
             .overlay {
                 if filteredExercises.isEmpty && !searchText.isEmpty {
                     ContentUnavailableView.search(text: searchText)
@@ -109,7 +129,7 @@ struct ExerciseListView: View {
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         if exercise.isCustom {
                             Button(role: .destructive) {
-                                deleteExercise(exercise)
+                                exerciseToDelete = exercise
                             } label: {
                                 Label("Löschen", systemImage: "trash")
                             }

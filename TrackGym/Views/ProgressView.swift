@@ -33,6 +33,12 @@ struct ProgressTabView: View {
                 }
             }
             .navigationTitle("Fortschritt")
+            .onChange(of: exercisesWithData) { _, newValue in
+                if let selected = selectedExercise,
+                   !newValue.contains(where: { $0.persistentModelID == selected.persistentModelID }) {
+                    selectedExercise = nil
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     NavigationLink {

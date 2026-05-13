@@ -49,6 +49,14 @@ struct WorkoutSessionView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.blue)
+
+                Button(role: .destructive) {
+                    connectivity.clearLocalState()
+                } label: {
+                    Label("Workout beenden", systemImage: "xmark.circle.fill")
+                        .font(.subheadline)
+                }
+                .buttonStyle(.bordered)
             }
             .padding(.horizontal)
         }

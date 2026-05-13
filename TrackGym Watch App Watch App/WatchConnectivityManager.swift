@@ -78,5 +78,17 @@ final class WatchConnectivityManager: NSObject, WCSessionDelegate {
         }
     }
 
+    /// Clears workout state locally without requiring the phone to be reachable.
+    /// Use this as an escape hatch when the phone process was killed mid-workout
+    /// and the watch is stuck with workoutActive = true.
+    @MainActor
+    func clearLocalState() {
+        workoutActive = false
+        exerciseName = ""
+        muscleGroup = ""
+        unit = "kg"
+        sets = []
+    }
+
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {}
 }

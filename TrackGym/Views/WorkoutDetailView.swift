@@ -14,8 +14,8 @@ struct WorkoutDetailView: View {
     }
 
     var planWorkouts: [Workout] {
-        let planName = plan.name
-        return allWorkouts.filter { $0.name == planName }
+        let planID = plan.persistentModelID
+        return allWorkouts.filter { $0.plan?.persistentModelID == planID }
     }
 
     var lastWorkout: Workout? {

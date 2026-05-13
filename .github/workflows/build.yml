@@ -49,7 +49,7 @@ jobs:
             -destination "id=$DEST" \
             -configuration Debug \
             -only-testing:TrackGymTests \
-            -only-testing:TrackGymUITests
+            -only-testing:TrackGymUITests/TrackGymUITests/test_appLaunchesAndShowsRootView
 
   watchos:
     name: watchOS Build

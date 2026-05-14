@@ -30,7 +30,9 @@ struct ExportWorkout: Codable {
 }
 
 struct ExportWorkoutEntry: Codable {
-    var exerciseName: String
+    /// Optional so entries whose exercise was deleted (or never linked) survive
+    /// a round-trip without being silently dropped on import.
+    var exerciseName: String?
     var date: Date
     var sets: [ExportWorkoutSet]
 }
@@ -39,6 +41,22 @@ struct ExportWorkoutSet: Codable {
     var setNumber: Int
     var weight: Double
     var reps: Int
+}
+
+// MARK: - Errors
+
+enum DataExporterError: LocalizedError {
+    /// Two or more exercises in the export share the same name, which would
+    /// silently merge them on import and re-link history to the wrong row.
+    case duplicateExerciseNames([String])
+
+    var errorDescription: String? {
+        switch self {
+        case .duplicateExerciseNames(let names):
+            let joined = names.joined(separator: ", ")
+            return "Import abgebrochen: doppelte Übungsnamen erkannt (\(joined))."
+        }
+    }
 }
 
 // MARK: - Exporter
@@ -73,7 +91,7 @@ enum DataExporter {
                 duration: workout.duration,
                 entries: workout.entries.map { entry in
                     ExportWorkoutEntry(
-                        exerciseName: entry.exercise?.name ?? "",
+                        exerciseName: entry.exercise?.name,
                         date: entry.date,
                         sets: entry.sortedSets.map { set in
                             ExportWorkoutSet(
@@ -104,9 +122,24 @@ enum DataExporter {
         decoder.dateDecodingStrategy = .iso8601
         let importData = try decoder.decode(ExportData.self, from: data)
 
+        // MHE-5: Reject imports that contain duplicate exercise names up-front.
+        // The import path resolves entries by name only, so silently merging
+        // duplicates would re-link history to the wrong Exercise on round-trip.
+        let duplicates = importData.exercises
+            .map(\.name)
+            .reduce(into: [String: Int]()) { counts, name in counts[name, default: 0] += 1 }
+            .filter { $0.value > 1 }
+            .map(\.key)
+            .sorted()
+        if !duplicates.isEmpty {
+            throw DataExporterError.duplicateExerciseNames(duplicates)
+        }
+
         do {
-            try deleteAll(WorkoutSet.self, in: context)
-            try deleteAll(WorkoutEntry.self, in: context)
+            // MHE-7: Delete only the roots and let SwiftData's cascade rules
+            // (`Workout.entries` -> `WorkoutEntry.sets`) propagate. This removes
+            // the brittle fixed-order fetch/delete that could leave the store
+            // inconsistent on partial failure.
             try deleteAll(Workout.self, in: context)
             try deleteAll(WorkoutPlan.self, in: context)
             try deleteAll(Exercise.self, in: context)
@@ -135,7 +168,12 @@ enum DataExporter {
                 context.insert(workout)
 
                 for entryData in workoutData.entries {
-                    guard let exercise = exerciseMap[entryData.exerciseName] else { continue }
+                    // MHE-6: Preserve entries whose exercise reference is nil
+                    // (or whose name didn't resolve, e.g. data from an older
+                    // export with an empty string). The Workout model already
+                    // tolerates `exercise: nil`, so dropping these silently
+                    // was the only thing causing data loss.
+                    let exercise: Exercise? = entryData.exerciseName.flatMap { exerciseMap[$0] }
                     let entry = WorkoutEntry(date: entryData.date, exercise: exercise)
                     entry.workout = workout
                     context.insert(entry)

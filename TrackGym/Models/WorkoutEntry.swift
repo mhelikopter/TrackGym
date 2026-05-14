@@ -22,7 +22,7 @@ final class WorkoutEntry {
         sets.reduce(0) { $0 + $1.weight * Double($1.reps) }
     }
 
-    init(date: Date, exercise: Exercise) {
+    init(date: Date, exercise: Exercise?) {
         self.date = date
         self.exercise = exercise
     }

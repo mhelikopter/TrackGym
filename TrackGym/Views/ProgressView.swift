@@ -105,10 +105,10 @@ private struct OverallProgressView: View {
 
     private var workouts: [Workout] {
         let entries = exercises.flatMap(\.completedWorkoutEntries)
-        let keyed = Dictionary(uniqueKeysWithValues: entries.compactMap { entry in
-            guard let workout = entry.workout else { return nil }
-            return (workout.persistentModelID, workout)
-        })
+        let keyed: [PersistentIdentifier: Workout] = entries.reduce(into: [:]) { result, entry in
+            guard let workout = entry.workout else { return }
+            result[workout.persistentModelID] = workout
+        }
         return keyed.values.sorted { $0.date < $1.date }
     }
 

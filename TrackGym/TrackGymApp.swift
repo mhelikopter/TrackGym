@@ -10,6 +10,7 @@ struct TrackGymApp: App {
             WorkoutSet.self,
             WorkoutPlan.self,
             Workout.self,
+            SeedVersion.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

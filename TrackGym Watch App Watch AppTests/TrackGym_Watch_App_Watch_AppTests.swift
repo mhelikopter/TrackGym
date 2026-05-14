@@ -10,11 +10,12 @@ import XCTest
 
 final class TrackGym_Watch_App_Watch_AppTests: XCTestCase {
 
-    // MARK: - applyState("activeExercise")
+    // MARK: - applyStateSynchronously("activeExercise")
 
     /// Verifies that an "activeExercise" payload fully populates the manager's
     /// published state and flips workoutActive to true.
-    func testApplyState_activeExercise_updatesAllFields() async throws {
+    @MainActor
+    func testApplyState_activeExercise_updatesAllFields() {
         let manager = WatchConnectivityManager()
 
         let payload: [String: Any] = [
@@ -28,12 +29,7 @@ final class TrackGym_Watch_App_Watch_AppTests: XCTestCase {
             ]
         ]
 
-        manager.applyState(payload)
-
-        // applyState dispatches onto @MainActor; yield so it can run.
-        await Task.yield()
-        // Give the MainActor task time to complete.
-        try await Task.sleep(nanoseconds: 50_000_000) // 50 ms
+        manager.applyStateSynchronously(payload)
 
         XCTAssertTrue(manager.workoutActive)
         XCTAssertEqual(manager.exerciseName, "Bench Press")
@@ -45,11 +41,12 @@ final class TrackGym_Watch_App_Watch_AppTests: XCTestCase {
         XCTAssertEqual(manager.sets.first?.reps, 10)
     }
 
-    // MARK: - applyState("workoutEnded")
+    // MARK: - applyStateSynchronously("workoutEnded")
 
     /// Verifies that a "workoutEnded" payload clears workoutActive, exerciseName,
     /// and sets — even when a workout was previously active.
-    func testApplyState_workoutEnded_clearsState() async throws {
+    @MainActor
+    func testApplyState_workoutEnded_clearsState() {
         let manager = WatchConnectivityManager()
 
         // First put the manager into an active state.
@@ -60,26 +57,24 @@ final class TrackGym_Watch_App_Watch_AppTests: XCTestCase {
             "unit": "kg",
             "sets": [["setNumber": 1, "weight": 100.0, "reps": 5]]
         ]
-        manager.applyState(startPayload)
-        try await Task.sleep(nanoseconds: 50_000_000)
+        manager.applyStateSynchronously(startPayload)
 
         // Now end the workout.
-        manager.applyState(["type": "workoutEnded"])
-        try await Task.sleep(nanoseconds: 50_000_000)
+        manager.applyStateSynchronously(["type": "workoutEnded"])
 
         XCTAssertFalse(manager.workoutActive)
         XCTAssertEqual(manager.exerciseName, "")
         XCTAssertTrue(manager.sets.isEmpty)
     }
 
-    // MARK: - applyState with unknown type
+    // MARK: - applyStateSynchronously with unknown type
 
     /// Verifies that an unrecognised message type does not mutate state.
-    func testApplyState_unknownType_isIgnored() async throws {
+    @MainActor
+    func testApplyState_unknownType_isIgnored() {
         let manager = WatchConnectivityManager()
 
-        manager.applyState(["type": "unknownEvent", "data": "irrelevant"])
-        try await Task.sleep(nanoseconds: 50_000_000)
+        manager.applyStateSynchronously(["type": "unknownEvent", "data": "irrelevant"])
 
         // Default initial values must be preserved.
         XCTAssertFalse(manager.workoutActive)
@@ -87,14 +82,14 @@ final class TrackGym_Watch_App_Watch_AppTests: XCTestCase {
         XCTAssertTrue(manager.sets.isEmpty)
     }
 
-    // MARK: - applyState with missing type key
+    // MARK: - applyStateSynchronously with missing type key
 
     /// Verifies that a payload without a "type" key is silently discarded.
-    func testApplyState_missingTypeKey_isIgnored() async throws {
+    @MainActor
+    func testApplyState_missingTypeKey_isIgnored() {
         let manager = WatchConnectivityManager()
 
-        manager.applyState(["exerciseName": "Deadlift"])
-        try await Task.sleep(nanoseconds: 50_000_000)
+        manager.applyStateSynchronously(["exerciseName": "Deadlift"])
 
         XCTAssertFalse(manager.workoutActive)
         XCTAssertEqual(manager.exerciseName, "")

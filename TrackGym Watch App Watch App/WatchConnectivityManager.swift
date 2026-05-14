@@ -53,29 +53,40 @@ final class WatchConnectivityManager: NSObject, WCSessionDelegate {
         applyState(applicationContext)
     }
 
+    /// Entry point for incoming WCSession payloads. WCSessionDelegate callbacks
+    /// arrive on a background queue, so this wrapper hops to the main actor and
+    /// invokes the synchronous mutation core. Production call sites are unchanged.
     func applyState(_ message: [String: Any]) {
         Task { @MainActor in
-            guard let type = message["type"] as? String else { return }
-            switch type {
-            case "activeExercise":
-                self.exerciseName = message["exerciseName"] as? String ?? ""
-                self.muscleGroup = message["muscleGroup"] as? String ?? ""
-                self.unit = message["unit"] as? String ?? "kg"
-                let raw = message["sets"] as? [[String: Any]] ?? []
-                self.sets = raw.compactMap { dict in
-                    guard let n = dict["setNumber"] as? Int,
-                          let w = dict["weight"] as? Double,
-                          let r = dict["reps"] as? Int else { return nil }
-                    return WatchSet(setNumber: n, weight: w, reps: r)
-                }
-                self.workoutActive = true
-            case "workoutEnded":
-                self.workoutActive = false
-                self.exerciseName = ""
-                self.sets = []
-            default:
-                break
+            self.applyStateSynchronously(message)
+        }
+    }
+
+    /// Synchronous, MainActor-isolated mutation core. Exposed at internal
+    /// visibility so unit tests can drive state transitions deterministically
+    /// without relying on `Task.sleep` to bridge the async hop.
+    @MainActor
+    func applyStateSynchronously(_ message: [String: Any]) {
+        guard let type = message["type"] as? String else { return }
+        switch type {
+        case "activeExercise":
+            self.exerciseName = message["exerciseName"] as? String ?? ""
+            self.muscleGroup = message["muscleGroup"] as? String ?? ""
+            self.unit = message["unit"] as? String ?? "kg"
+            let raw = message["sets"] as? [[String: Any]] ?? []
+            self.sets = raw.compactMap { dict in
+                guard let n = dict["setNumber"] as? Int,
+                      let w = dict["weight"] as? Double,
+                      let r = dict["reps"] as? Int else { return nil }
+                return WatchSet(setNumber: n, weight: w, reps: r)
             }
+            self.workoutActive = true
+        case "workoutEnded":
+            self.workoutActive = false
+            self.exerciseName = ""
+            self.sets = []
+        default:
+            break
         }
     }
 

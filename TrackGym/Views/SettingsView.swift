@@ -275,8 +275,11 @@ struct SettingsView: View {
             try deleteAll(Workout.self)
             try deleteAll(WorkoutPlan.self)
             try deleteAll(Exercise.self)
+            DefaultExercises.resetSeedFlag(context: modelContext)
             try modelContext.save()
-            DefaultExercises.resetSeedFlag()
+            // If the re-seed save below throws, rollback() reverts both the
+            // newly inserted Exercise rows and the SeedVersion upsert in a
+            // single step, since both live in the SwiftData store (MHE-24).
             DefaultExercises.seedDefaultExercises(context: modelContext)
             try modelContext.save()
             alertMessage = "Alle Daten gelöscht."

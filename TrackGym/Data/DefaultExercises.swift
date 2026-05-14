@@ -93,15 +93,37 @@ struct DefaultExercises {
         ("Ab Roller", .core, .bodyweight),
     ]
 
-    private static let seedVersionKey = "defaultExercisesSeedVersion"
-    private static let currentSeedVersion = 1
+    static let currentSeedVersion = 1
 
+    /// Seeds the default exercises into the store, idempotently.
+    ///
+    /// The seed-version flag lives in SwiftData (see `SeedVersion`) so it
+    /// travels with the store and is rolled back automatically when a
+    /// `modelContext.rollback()` undoes a failed seed (MHE-24).
+    ///
+    /// On a fetch failure we log loudly and bail out instead of silently
+    /// re-inserting every default and creating duplicates against a broken
+    /// store (MHE-26).
     static func seedDefaultExercises(context: ModelContext) {
-        let stored = UserDefaults.standard.integer(forKey: seedVersionKey)
-        guard stored < currentSeedVersion else { return }
+        let storedVersion: SeedVersion?
+        do {
+            storedVersion = try context.fetch(FetchDescriptor<SeedVersion>()).first
+        } catch {
+            assertionFailure("Failed to read SeedVersion, aborting seed to avoid duplicates: \(error)")
+            return
+        }
 
-        let descriptor = FetchDescriptor<Exercise>()
-        let existingExercises = (try? context.fetch(descriptor)) ?? []
+        if let storedVersion, storedVersion.version >= currentSeedVersion {
+            return
+        }
+
+        let existingExercises: [Exercise]
+        do {
+            existingExercises = try context.fetch(FetchDescriptor<Exercise>())
+        } catch {
+            assertionFailure("Failed to fetch existing Exercises, aborting seed to avoid duplicates: \(error)")
+            return
+        }
         let existingNames = Set(existingExercises.map(\.name))
 
         for entry in exercises {
@@ -115,10 +137,25 @@ struct DefaultExercises {
             context.insert(exercise)
         }
 
-        UserDefaults.standard.set(currentSeedVersion, forKey: seedVersionKey)
+        // Upsert the seed-version marker. Both the inserted Exercises above
+        // and this row become part of the same unsaved-changes set, so a
+        // single rollback() restores both to their previous state.
+        if let storedVersion {
+            storedVersion.version = currentSeedVersion
+        } else {
+            context.insert(SeedVersion(version: currentSeedVersion))
+        }
     }
 
-    static func resetSeedFlag() {
-        UserDefaults.standard.removeObject(forKey: seedVersionKey)
+    /// Clears the SwiftData-backed seed-version flag so the next call to
+    /// `seedDefaultExercises` will re-seed. Used by destructive flows like
+    /// "Alle Daten löschen" and by tests.
+    static func resetSeedFlag(context: ModelContext) {
+        do {
+            let stored = try context.fetch(FetchDescriptor<SeedVersion>())
+            for row in stored { context.delete(row) }
+        } catch {
+            assertionFailure("Failed to reset SeedVersion: \(error)")
+        }
     }
 }

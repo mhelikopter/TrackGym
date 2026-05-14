@@ -15,14 +15,13 @@ final class TrackGymTests: XCTestCase {
             WorkoutEntry.self,
             WorkoutSet.self,
             WorkoutPlan.self,
+            SeedVersion.self,
         ])
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         container = try ModelContainer(for: schema, configurations: [config])
-        DefaultExercises.resetSeedFlag()
     }
 
     override func tearDownWithError() throws {
-        DefaultExercises.resetSeedFlag()
         container = nil
     }
 
@@ -78,12 +77,46 @@ final class TrackGymTests: XCTestCase {
         }
         try context.save()
 
-        DefaultExercises.resetSeedFlag()
+        DefaultExercises.resetSeedFlag(context: context)
         DefaultExercises.seedDefaultExercises(context: context)
         try context.save()
 
         let count = try context.fetch(FetchDescriptor<Exercise>()).count
         XCTAssertEqual(count, DefaultExercises.exercises.count)
+    }
+
+    // MARK: - Seed flag rollback (MHE-24)
+
+    func test_seedVersion_isPersistedInSwiftData() throws {
+        DefaultExercises.seedDefaultExercises(context: context)
+        try context.save()
+
+        let rows = try context.fetch(FetchDescriptor<SeedVersion>())
+        XCTAssertEqual(rows.count, 1)
+        XCTAssertEqual(rows.first?.version, DefaultExercises.currentSeedVersion)
+    }
+
+    func test_rollback_reverts_unsavedSeedVersionUpsert() throws {
+        // Simulates the SettingsView delete-all flow where the re-seed save
+        // throws and rollback() must revert the seed-version marker too.
+        DefaultExercises.seedDefaultExercises(context: context)
+        context.rollback()
+
+        let rows = try context.fetch(FetchDescriptor<SeedVersion>())
+        XCTAssertTrue(rows.isEmpty)
+        let exercises = try context.fetch(FetchDescriptor<Exercise>())
+        XCTAssertTrue(exercises.isEmpty)
+    }
+
+    func test_seed_bailsOut_whenSeedVersionAlreadyAtCurrent() throws {
+        context.insert(SeedVersion(version: DefaultExercises.currentSeedVersion))
+        try context.save()
+
+        DefaultExercises.seedDefaultExercises(context: context)
+        try context.save()
+
+        let count = try context.fetch(FetchDescriptor<Exercise>()).count
+        XCTAssertEqual(count, 0)
     }
 
     // MARK: - DataExporter round-trip

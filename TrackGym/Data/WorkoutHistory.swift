@@ -1,7 +1,10 @@
 import Foundation
+import OSLog
 import SwiftData
 
 enum WorkoutHistory {
+    private static let log = Logger(subsystem: "com.trackgym.app", category: "WorkoutHistory")
+
     static func previousEntry(
         for exercise: Exercise?,
         in context: ModelContext,
@@ -10,12 +13,30 @@ enum WorkoutHistory {
     ) -> WorkoutEntry? {
         guard let exercise else { return nil }
         let exerciseName = exercise.name
-        var descriptor = FetchDescriptor<WorkoutEntry>(
+        // Fetch all entries for this exercise sorted by date desc, then exclude
+        // entries belonging to the active workout client-side. The previous
+        // implementation used `fetchLimit = 5`, which could return `nil` when
+        // the active workout itself contained 5+ entries for the same exercise
+        // (MHE-8). SwiftData's `#Predicate` macro does not support filtering
+        // by a Swift `Set<PersistentIdentifier>`, so the exclusion remains
+        // client-side, but the limit is dropped so we never miss a true
+        // previous entry.
+        let descriptor = FetchDescriptor<WorkoutEntry>(
             predicate: #Predicate { $0.exercise?.name == exerciseName },
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
-        descriptor.fetchLimit = 5
-        let entries = (try? context.fetch(descriptor)) ?? []
+        let entries: [WorkoutEntry]
+        do {
+            entries = try context.fetch(descriptor)
+        } catch {
+            // Surface the failure: in DEBUG this is almost certainly a bug
+            // (corrupt store, schema mismatch) we want to catch in development.
+            // In release we log a non-fatal warning so it is visible in Console
+            // without crashing the user's active workout. (MHE-25)
+            assertionFailure("WorkoutHistory.previousEntry fetch failed: \(error)")
+            log.error("previousEntry fetch failed: \(error.localizedDescription, privacy: .public)")
+            return nil
+        }
         let currentIDs = Set(currentEntries.map(\.persistentModelID))
         let activeID = activeWorkout?.persistentModelID
         return entries.first { entry in

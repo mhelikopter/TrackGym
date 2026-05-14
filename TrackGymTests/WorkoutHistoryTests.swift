@@ -131,14 +131,19 @@ final class WorkoutHistoryTests: XCTestCase {
     func test_appendSet_inserts_intoModelContext() throws {
         let exercise = makeExercise("Bench Press")
         let entry = makeEntry(for: exercise, daysAgo: 0)
+        let initialSetCount = entry.sets.count
         try context.save()
 
-        _ = WorkoutHistory.appendSet(weight: 50, reps: 12, to: entry, in: context)
+        let added = WorkoutHistory.appendSet(weight: 50, reps: 12, to: entry, in: context)
         try context.save()
 
         let allSets = try context.fetch(FetchDescriptor<WorkoutSet>())
         XCTAssertEqual(allSets.count, 1)
         XCTAssertEqual(allSets.first?.weight, 50)
+        // Guard against regressions that insert the set into the context but
+        // forget to attach it to `entry.sets` (MHE-28).
+        XCTAssertEqual(entry.sets.count, initialSetCount + 1)
+        XCTAssertTrue(entry.sets.contains { $0.persistentModelID == added.persistentModelID })
     }
 
     // MARK: - Helpers

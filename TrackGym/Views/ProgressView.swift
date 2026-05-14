@@ -7,7 +7,9 @@ struct ProgressTabView: View {
     @State private var selectedExercise: Exercise?
 
     private var exercisesWithData: [Exercise] {
-        exercises.filter { !$0.workoutEntries.isEmpty }.sorted { $0.name < $1.name }
+        exercises
+            .filter { !$0.completedWorkoutEntries.isEmpty }
+            .sorted { $0.name < $1.name }
     }
 
     var body: some View {
@@ -101,22 +103,31 @@ private struct OverallProgressView: View {
     @AppStorage("weightUnit") private var weightUnit: String = WeightUnit.kg.rawValue
     let exercises: [Exercise]
 
-    private var allEntries: [WorkoutEntry] {
-        exercises.flatMap(\.workoutEntries)
+    private var workouts: [Workout] {
+        let entries = exercises.flatMap(\.completedWorkoutEntries)
+        let keyed = Dictionary(uniqueKeysWithValues: entries.compactMap { entry in
+            guard let workout = entry.workout else { return nil }
+            return (workout.persistentModelID, workout)
+        })
+        return keyed.values.sorted { $0.date < $1.date }
     }
 
-    private var volumeByDate: [(date: Date, volume: Double)] {
-        let grouped = Dictionary(grouping: allEntries) { Calendar.current.startOfDay(for: $0.date) }
-        return grouped.map { (date: $0.key, volume: $0.value.reduce(0) { $0 + $1.totalVolume }) }
-            .sorted { $0.date < $1.date }
+    private var volumeByWorkout: [(id: PersistentIdentifier, date: Date, volume: Double)] {
+        workouts.map { workout in
+            (
+                id: workout.persistentModelID,
+                date: workout.date,
+                volume: workout.entries.reduce(0) { $0 + $1.totalVolume }
+            )
+        }
     }
 
     private var totalWorkouts: Int {
-        Set(allEntries.map { Calendar.current.startOfDay(for: $0.date) }).count
+        workouts.count
     }
 
     private var totalVolume: Double {
-        allEntries.reduce(0) { $0 + $1.totalVolume }
+        volumeByWorkout.reduce(0) { $0 + $1.volume }
     }
 
     private var averageVolume: Double {
@@ -125,10 +136,10 @@ private struct OverallProgressView: View {
 
     var body: some View {
         List {
-            if !volumeByDate.isEmpty {
+            if !volumeByWorkout.isEmpty {
                 Section("Gesamtvolumen pro Training") {
                     Chart {
-                        ForEach(volumeByDate, id: \.date) { point in
+                        ForEach(volumeByWorkout, id: \.id) { point in
                             LineMark(
                                 x: .value("Datum", point.date),
                                 y: .value("Volumen (\(weightUnit))", point.volume)
@@ -200,11 +211,11 @@ private struct ExerciseProgressView: View {
     let exercise: Exercise
 
     private var sortedEntries: [WorkoutEntry] {
-        exercise.workoutEntries.sorted { $0.date < $1.date }
+        exercise.completedWorkoutEntries.sorted { $0.date < $1.date }
     }
 
     private var personalRecord: Double {
-        exercise.workoutEntries.flatMap(\.sets).map(\.weight).max() ?? 0
+        exercise.completedWorkoutEntries.flatMap(\.sets).map(\.weight).max() ?? 0
     }
 
     var body: some View {
@@ -267,6 +278,12 @@ private struct ExerciseProgressView: View {
                 }
             }
         }
+    }
+}
+
+private extension Exercise {
+    var completedWorkoutEntries: [WorkoutEntry] {
+        workoutEntries.filter { $0.workout != nil }
     }
 }
 

@@ -104,7 +104,7 @@ struct ExerciseListView: View {
                     exerciseToDelete = nil
                 }
             } message: {
-                Text("Die Übung und alle zugehörigen Trainingseinträge werden unwiderruflich gelöscht.")
+                Text("Die Übung wird gelöscht. Frühere Trainingseinträge bleiben erhalten und zeigen dann keine verknüpfte Übung mehr an.")
             }
             .overlay {
                 if filteredExercises.isEmpty && !searchText.isEmpty {

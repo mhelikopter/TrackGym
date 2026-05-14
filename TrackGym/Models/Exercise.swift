@@ -31,4 +31,10 @@ final class Exercise {
         self.equipmentTypeRaw = equipmentType.rawValue
         self.isCustom = isCustom
     }
+
+    static func normalizedName(_ name: String) -> String {
+        name
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
+    }
 }

@@ -6,7 +6,7 @@ struct ExerciseImageView: View {
 
     var body: some View {
         Group {
-            if let urlString = exercise.imageURL, let url = URL(string: urlString) {
+            if let url = validatedRemoteImageURL {
                 AsyncImage(url: url) { image in
                     image
                         .resizable()
@@ -20,6 +20,16 @@ struct ExerciseImageView: View {
         }
         .frame(width: size, height: size)
         .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private var validatedRemoteImageURL: URL? {
+        guard let urlString = exercise.imageURL,
+              let url = URL(string: urlString),
+              url.scheme?.lowercased() == "https",
+              url.host?.isEmpty == false else {
+            return nil
+        }
+        return url
     }
 
     private var placeholderIcon: some View {

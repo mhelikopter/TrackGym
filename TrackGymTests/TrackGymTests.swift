@@ -181,6 +181,71 @@ final class TrackGymTests: XCTestCase {
         XCTAssertEqual(names, ["Existing"])
     }
 
+    func test_import_rejectsDuplicateExerciseNames_caseInsensitive() throws {
+        let payload = ExportData(
+            exercises: [
+                ExportExercise(name: "Bench Press", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: nil),
+                ExportExercise(name: " bench press ", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.machine.rawValue, isCustom: true, imageURL: nil),
+            ],
+            workoutPlans: [],
+            workouts: []
+        )
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(payload)
+
+        XCTAssertThrowsError(try DataExporter.importData(from: data, context: context)) { error in
+            guard case DataExporterError.duplicateExerciseNames = error else {
+                return XCTFail("Unexpected error: \(error)")
+            }
+        }
+    }
+
+    func test_import_rejectsUnsupportedExerciseImageURL() throws {
+        let payload = ExportData(
+            exercises: [
+                ExportExercise(name: "Bench Press", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: "http://example.com/image.png"),
+            ],
+            workoutPlans: [],
+            workouts: []
+        )
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(payload)
+
+        XCTAssertThrowsError(try DataExporter.importData(from: data, context: context)) { error in
+            guard case DataExporterError.unsupportedExerciseImageURL(let value) = error else {
+                return XCTFail("Unexpected error: \(error)")
+            }
+            XCTAssertEqual(value, "http://example.com/image.png")
+        }
+    }
+
+    func test_import_preservesHTTPSExerciseImageURL() throws {
+        let payload = ExportData(
+            exercises: [
+                ExportExercise(name: "Bench Press", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: "https://example.com/image.png"),
+            ],
+            workoutPlans: [],
+            workouts: []
+        )
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(payload)
+
+        try DataExporter.importData(from: data, context: context)
+
+        let exercises = try context.fetch(FetchDescriptor<Exercise>())
+        XCTAssertEqual(exercises.first?.imageURL, "https://example.com/image.png")
+    }
+
+    func test_normalizedName_collapsesCaseWhitespaceAndDiacritics() {
+        XCTAssertEqual(
+            Exercise.normalizedName("  Bänkdrücken  "),
+            Exercise.normalizedName("bankdrucken")
+        )
+    }
+
     // MARK: - Helpers
 
     private func makeEntry(weights: [(setNumber: Int, weight: Double, reps: Int)]) -> WorkoutEntry {

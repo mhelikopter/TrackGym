@@ -49,12 +49,15 @@ enum DataExporterError: LocalizedError {
     /// Two or more exercises in the export share the same name, which would
     /// silently merge them on import and re-link history to the wrong row.
     case duplicateExerciseNames([String])
+    case unsupportedExerciseImageURL(String)
 
     var errorDescription: String? {
         switch self {
         case .duplicateExerciseNames(let names):
             let joined = names.joined(separator: ", ")
             return "Import abgebrochen: doppelte Übungsnamen erkannt (\(joined))."
+        case .unsupportedExerciseImageURL(let url):
+            return "Import abgebrochen: nicht erlaubte Bild-URL erkannt (\(url))."
         }
     }
 }
@@ -125,11 +128,15 @@ enum DataExporter {
         // MHE-5: Reject imports that contain duplicate exercise names up-front.
         // The import path resolves entries by name only, so silently merging
         // duplicates would re-link history to the wrong Exercise on round-trip.
+        let normalizedToOriginal = importData.exercises.reduce(into: [String: String]()) { mapping, exercise in
+            let normalized = Exercise.normalizedName(exercise.name)
+            mapping[normalized] = mapping[normalized] ?? exercise.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
         let duplicates = importData.exercises
-            .map(\.name)
+            .map { Exercise.normalizedName($0.name) }
             .reduce(into: [String: Int]()) { counts, name in counts[name, default: 0] += 1 }
             .filter { $0.value > 1 }
-            .map(\.key)
+            .compactMap { normalizedToOriginal[$0.key] }
             .sorted()
         if !duplicates.isEmpty {
             throw DataExporterError.duplicateExerciseNames(duplicates)
@@ -146,20 +153,23 @@ enum DataExporter {
 
             var exerciseMap: [String: Exercise] = [:]
             for ex in importData.exercises {
+                let validatedImageURL = try validatedRemoteImageURLString(ex.imageURL)
                 let exercise = Exercise(
                     name: ex.name,
                     muscleGroup: MuscleGroup(rawValue: ex.muscleGroup) ?? .chest,
                     equipmentType: EquipmentType(rawValue: ex.equipmentType) ?? .machine,
                     isCustom: ex.isCustom
                 )
-                exercise.imageURL = ex.imageURL
+                exercise.imageURL = validatedImageURL
                 context.insert(exercise)
-                exerciseMap[ex.name] = exercise
+                exerciseMap[Exercise.normalizedName(ex.name)] = exercise
             }
 
             for planData in importData.workoutPlans {
                 let plan = WorkoutPlan(name: planData.name)
-                plan.exercises = planData.exerciseNames.compactMap { exerciseMap[$0] }
+                plan.exercises = planData.exerciseNames.compactMap {
+                    exerciseMap[Exercise.normalizedName($0)]
+                }
                 context.insert(plan)
             }
 
@@ -173,7 +183,9 @@ enum DataExporter {
                     // export with an empty string). The Workout model already
                     // tolerates `exercise: nil`, so dropping these silently
                     // was the only thing causing data loss.
-                    let exercise: Exercise? = entryData.exerciseName.flatMap { exerciseMap[$0] }
+                    let exercise: Exercise? = entryData.exerciseName.flatMap {
+                        exerciseMap[Exercise.normalizedName($0)]
+                    }
                     let entry = WorkoutEntry(date: entryData.date, exercise: exercise)
                     entry.workout = workout
                     context.insert(entry)
@@ -201,5 +213,16 @@ enum DataExporter {
     private static func deleteAll<T: PersistentModel>(_ type: T.Type, in context: ModelContext) throws {
         let items = try context.fetch(FetchDescriptor<T>())
         for item in items { context.delete(item) }
+    }
+
+    private static func validatedRemoteImageURLString(_ rawValue: String?) throws -> String? {
+        guard let rawValue else { return nil }
+        guard let url = URL(string: rawValue),
+              let scheme = url.scheme?.lowercased(),
+              scheme == "https",
+              url.host?.isEmpty == false else {
+            throw DataExporterError.unsupportedExerciseImageURL(rawValue)
+        }
+        return url.absoluteString
     }
 }

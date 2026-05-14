@@ -4,13 +4,25 @@ import SwiftData
 struct AddExerciseView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Query(sort: \Exercise.name) private var exercises: [Exercise]
 
     @State private var name = ""
     @State private var selectedMuscleGroup: MuscleGroup = .chest
     @State private var selectedEquipmentType: EquipmentType = .freeWeight
+    @State private var duplicateNameAlert = false
+
+    private var trimmedName: String {
+        name.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var duplicateExercise: Exercise? {
+        let normalized = Exercise.normalizedName(trimmedName)
+        guard !normalized.isEmpty else { return nil }
+        return exercises.first { Exercise.normalizedName($0.name) == normalized }
+    }
 
     private var isValid: Bool {
-        !name.trimmingCharacters(in: .whitespaces).isEmpty
+        !trimmedName.isEmpty
     }
 
     var body: some View {
@@ -34,6 +46,15 @@ struct AddExerciseView: View {
             }
             .navigationTitle("Neue Übung")
             .navigationBarTitleDisplayMode(.inline)
+            .alert("Übung existiert bereits", isPresented: $duplicateNameAlert) {
+                Button("OK") {}
+            } message: {
+                if let duplicateExercise {
+                    Text("„\(duplicateExercise.name)“ ist bereits vorhanden. Verwende einen eindeutigen Namen.")
+                } else {
+                    Text("Verwende einen eindeutigen Namen.")
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Abbrechen") {
@@ -51,8 +72,13 @@ struct AddExerciseView: View {
     }
 
     private func saveExercise() {
+        guard duplicateExercise == nil else {
+            duplicateNameAlert = true
+            return
+        }
+
         let exercise = Exercise(
-            name: name.trimmingCharacters(in: .whitespaces),
+            name: trimmedName,
             muscleGroup: selectedMuscleGroup,
             equipmentType: selectedEquipmentType,
             isCustom: true

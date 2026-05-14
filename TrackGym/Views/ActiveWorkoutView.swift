@@ -92,13 +92,15 @@ struct ActiveWorkoutView: View {
                 }
             }
             .onAppear {
-                PhoneConnectivityManager.shared.activate()
                 startTime = Date()
                 setupExercises()
                 sendCurrentExerciseToWatch()
             }
-            .onDisappear {
-                PhoneConnectivityManager.shared.sendWorkoutEnded()
+            .onChange(of: workoutDate) { _, newDate in
+                for entry in workoutEntries {
+                    entry.date = newDate
+                }
+                activeWorkout?.date = newDate
             }
             .onReceive(NotificationCenter.default.publisher(for: .watchDidAddSet)) { notification in
                 guard let info = notification.userInfo,
@@ -138,6 +140,10 @@ struct ActiveWorkoutView: View {
     // MARK: - Setup
 
     private func setupExercises() {
+        // Guard against re-runs (e.g. when the view re-appears after a sheet
+        // is dismissed or the app returns from background). Without this, the
+        // plan's exercises get appended again, creating duplicate entries.
+        guard workoutEntries.isEmpty && activeWorkout == nil else { return }
         for exercise in plan.exercises {
             addExercise(exercise)
         }
@@ -199,6 +205,9 @@ struct ActiveWorkoutView: View {
         }
 
         if workoutEntries.isEmpty {
+            // Saving the last remaining entry also ends the workout, so the
+            // watch must be told to clear its active-exercise UI.
+            PhoneConnectivityManager.shared.sendWorkoutEnded()
             dismiss()
         } else {
             sendCurrentExerciseToWatch()
@@ -220,14 +229,28 @@ struct ActiveWorkoutView: View {
             entry.workout = activeWorkout
         }
         workoutEntries.removeAll()
+        PhoneConnectivityManager.shared.sendWorkoutEnded()
         dismiss()
     }
 
     private func cancelWorkout() {
-        for entry in workoutEntries {
+        // Delete any pending in-memory entries that were never attached to a
+        // workout. Entries already linked to `activeWorkout` will be removed by
+        // the cascade rule on `Workout.entries` when we delete the workout.
+        for entry in workoutEntries where entry.workout == nil {
             modelContext.delete(entry)
         }
         workoutEntries.removeAll()
+
+        // If the user already saved at least one entry mid-workout, the
+        // partial `Workout` was inserted into the context. Without this delete
+        // it would be silently persisted (potentially with zero entries).
+        if let workout = activeWorkout {
+            modelContext.delete(workout)
+            activeWorkout = nil
+        }
+
+        PhoneConnectivityManager.shared.sendWorkoutEnded()
         dismiss()
     }
 

@@ -9,6 +9,8 @@ struct WatchSetPayload: Hashable {
 
 final class PhoneConnectivityManager: NSObject, WCSessionDelegate {
     static let shared = PhoneConnectivityManager()
+    static let maximumAcceptedWeight = 2_000.0
+    static let maximumAcceptedReps = 1_000
 
     func activate() {
         guard WCSession.isSupported() else { return }
@@ -60,6 +62,10 @@ final class PhoneConnectivityManager: NSObject, WCSessionDelegate {
         guard let type = message["type"] as? String, type == "addSet",
               let weight = message["weight"] as? Double,
               let reps = message["reps"] as? Int else { return }
+        guard Self.isValidAddSetPayload(weight: weight, reps: reps) else {
+            NSLog("Ignoring invalid watch addSet payload")
+            return
+        }
         var payload: [AnyHashable: Any] = ["weight": weight, "reps": reps]
         if let name = message["exerciseName"] as? String, !name.isEmpty {
             payload["exerciseName"] = name
@@ -67,6 +73,14 @@ final class PhoneConnectivityManager: NSObject, WCSessionDelegate {
         Task { @MainActor in
             NotificationCenter.default.post(name: .watchDidAddSet, object: nil, userInfo: payload)
         }
+    }
+
+    static func isValidAddSetPayload(weight: Double, reps: Int) -> Bool {
+        weight.isFinite &&
+        weight >= 0 &&
+        weight <= maximumAcceptedWeight &&
+        reps > 0 &&
+        reps <= maximumAcceptedReps
     }
 
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {}

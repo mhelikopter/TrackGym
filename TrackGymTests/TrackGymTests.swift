@@ -246,6 +246,36 @@ final class TrackGymTests: XCTestCase {
         )
     }
 
+    // MARK: - WatchConnectivity payload validation
+
+    func test_addSetPayloadValidation_acceptsReasonableValues() {
+        XCTAssertTrue(PhoneConnectivityManager.isValidAddSetPayload(weight: 0, reps: 1))
+        XCTAssertTrue(PhoneConnectivityManager.isValidAddSetPayload(weight: 120.5, reps: 12))
+        XCTAssertTrue(PhoneConnectivityManager.isValidAddSetPayload(
+            weight: PhoneConnectivityManager.maximumAcceptedWeight,
+            reps: PhoneConnectivityManager.maximumAcceptedReps
+        ))
+    }
+
+    func test_addSetPayloadValidation_rejectsInvalidWeight() {
+        XCTAssertFalse(PhoneConnectivityManager.isValidAddSetPayload(weight: -0.5, reps: 10))
+        XCTAssertFalse(PhoneConnectivityManager.isValidAddSetPayload(weight: .nan, reps: 10))
+        XCTAssertFalse(PhoneConnectivityManager.isValidAddSetPayload(weight: .infinity, reps: 10))
+        XCTAssertFalse(PhoneConnectivityManager.isValidAddSetPayload(
+            weight: PhoneConnectivityManager.maximumAcceptedWeight + 0.5,
+            reps: 10
+        ))
+    }
+
+    func test_addSetPayloadValidation_rejectsInvalidReps() {
+        XCTAssertFalse(PhoneConnectivityManager.isValidAddSetPayload(weight: 100, reps: 0))
+        XCTAssertFalse(PhoneConnectivityManager.isValidAddSetPayload(weight: 100, reps: -1))
+        XCTAssertFalse(PhoneConnectivityManager.isValidAddSetPayload(
+            weight: 100,
+            reps: PhoneConnectivityManager.maximumAcceptedReps + 1
+        ))
+    }
+
     // MARK: - Helpers
 
     private func makeEntry(weights: [(setNumber: Int, weight: Double, reps: Int)]) -> WorkoutEntry {

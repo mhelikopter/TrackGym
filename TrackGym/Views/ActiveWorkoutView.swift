@@ -13,6 +13,8 @@ struct ActiveWorkoutView: View {
     @State private var showingCancelAlert = false
     @State private var showingFinishAlert = false
     @State private var showingAddExercise = false
+    @State private var persistenceErrorMessage = ""
+    @State private var showingPersistenceError = false
     @State private var previousEntries: [PersistentIdentifier: WorkoutEntry] = [:]
 
     @State private var startTime = Date()
@@ -127,6 +129,11 @@ struct ActiveWorkoutView: View {
             } message: {
                 Text("Alle verbleibenden Übungen werden gespeichert.")
             }
+            .alert("Training konnte nicht gespeichert werden", isPresented: $showingPersistenceError) {
+                Button("OK") {}
+            } message: {
+                Text(persistenceErrorMessage)
+            }
             .sheet(isPresented: $showingAddExercise) {
                 ExercisePickerView { exercises in
                     for exercise in exercises {
@@ -200,6 +207,8 @@ struct ActiveWorkoutView: View {
         entry.date = workoutDate
         entry.workout = activeWorkout
 
+        guard persistWorkoutChanges() else { return }
+
         withAnimation {
             workoutEntries.removeAll { $0.persistentModelID == entry.persistentModelID }
         }
@@ -228,6 +237,9 @@ struct ActiveWorkoutView: View {
             entry.date = workoutDate
             entry.workout = activeWorkout
         }
+
+        guard persistWorkoutChanges() else { return }
+
         workoutEntries.removeAll()
         PhoneConnectivityManager.shared.sendWorkoutEnded()
         dismiss()
@@ -240,16 +252,20 @@ struct ActiveWorkoutView: View {
         for entry in workoutEntries where entry.workout == nil {
             modelContext.delete(entry)
         }
-        workoutEntries.removeAll()
 
         // If the user already saved at least one entry mid-workout, the
         // partial `Workout` was inserted into the context. Without this delete
         // it would be silently persisted (potentially with zero entries).
         if let workout = activeWorkout {
             modelContext.delete(workout)
-            activeWorkout = nil
         }
 
+        guard persistWorkoutChanges(
+            failureMessage: "Das abgebrochene Training konnte nicht vollständig verworfen werden. Bitte versuche es erneut."
+        ) else { return }
+
+        workoutEntries.removeAll()
+        activeWorkout = nil
         PhoneConnectivityManager.shared.sendWorkoutEnded()
         dismiss()
     }
@@ -273,6 +289,19 @@ struct ActiveWorkoutView: View {
     private func addSetFromWatch(to entry: WorkoutEntry, weight: Double, reps: Int) {
         WorkoutHistory.appendSet(weight: weight, reps: reps, to: entry, in: modelContext)
         sendCurrentExerciseToWatch()
+    }
+
+    private func persistWorkoutChanges(
+        failureMessage: String = "Deine Änderungen wurden nicht dauerhaft gespeichert. Bitte versuche es erneut."
+    ) -> Bool {
+        do {
+            try modelContext.save()
+            return true
+        } catch {
+            persistenceErrorMessage = failureMessage
+            showingPersistenceError = true
+            return false
+        }
     }
 }
 

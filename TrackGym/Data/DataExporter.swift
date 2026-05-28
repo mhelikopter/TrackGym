@@ -49,15 +49,12 @@ enum DataExporterError: LocalizedError {
     /// Two or more exercises in the export share the same name, which would
     /// silently merge them on import and re-link history to the wrong row.
     case duplicateExerciseNames([String])
-    case unsupportedExerciseImageURL(String)
 
     var errorDescription: String? {
         switch self {
         case .duplicateExerciseNames(let names):
             let joined = names.joined(separator: ", ")
             return "Import abgebrochen: doppelte Übungsnamen erkannt (\(joined))."
-        case .unsupportedExerciseImageURL(let url):
-            return "Import abgebrochen: nicht erlaubte Bild-URL erkannt (\(url))."
         }
     }
 }
@@ -153,14 +150,13 @@ enum DataExporter {
 
             var exerciseMap: [String: Exercise] = [:]
             for ex in importData.exercises {
-                let validatedImageURL = try validatedRemoteImageURLString(ex.imageURL)
                 let exercise = Exercise(
                     name: ex.name,
                     muscleGroup: MuscleGroup(rawValue: ex.muscleGroup) ?? .chest,
                     equipmentType: EquipmentType(rawValue: ex.equipmentType) ?? .machine,
                     isCustom: ex.isCustom
                 )
-                exercise.imageURL = validatedImageURL
+                exercise.imageURL = nil
                 context.insert(exercise)
                 exerciseMap[Exercise.normalizedName(ex.name)] = exercise
             }
@@ -213,16 +209,5 @@ enum DataExporter {
     private static func deleteAll<T: PersistentModel>(_ type: T.Type, in context: ModelContext) throws {
         let items = try context.fetch(FetchDescriptor<T>())
         for item in items { context.delete(item) }
-    }
-
-    private static func validatedRemoteImageURLString(_ rawValue: String?) throws -> String? {
-        guard let rawValue else { return nil }
-        guard let url = URL(string: rawValue),
-              let scheme = url.scheme?.lowercased(),
-              scheme == "https",
-              url.host?.isEmpty == false else {
-            throw DataExporterError.unsupportedExerciseImageURL(rawValue)
-        }
-        return url.absoluteString
     }
 }

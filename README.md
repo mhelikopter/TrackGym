@@ -52,10 +52,14 @@ xcodebuild -project TrackGym.xcodeproj \
 ## Run the tests
 
 ```bash
+DEST=$(xcrun simctl list devices available \
+  | sed -nE 's/.*iPhone.*\(([0-9A-F-]{36})\) \(Shutdown\).*/\1/p' \
+  | head -1)
+
 xcodebuild test \
   -project TrackGym.xcodeproj \
   -scheme TrackGym \
-  -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
+  -destination "id=$DEST"
 ```
 
 ## Architecture

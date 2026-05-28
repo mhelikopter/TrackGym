@@ -42,6 +42,20 @@ final class TrackGymTests: XCTestCase {
         XCTAssertEqual(entry.totalVolume, 60 * 10 + 80 * 8, accuracy: 0.001)
     }
 
+    func test_weightUnit_convertsStoredKilogramsForDisplay() throws {
+        let set = WorkoutSet(setNumber: 1, weight: 100, reps: 5)
+        XCTAssertEqual(set.weight(in: .kg), 100, accuracy: 0.001)
+        XCTAssertEqual(set.weight(in: .lbs), 220.462, accuracy: 0.001)
+    }
+
+    func test_workoutSetStoresPoundsAsKilograms() throws {
+        let set = WorkoutSet(setNumber: 1, weight: 220.462, reps: 5, unit: .lbs)
+        XCTAssertEqual(set.weight, 100, accuracy: 0.001)
+
+        set.setWeight(110, unit: .lbs)
+        XCTAssertEqual(set.weight, 49.895, accuracy: 0.001)
+    }
+
     func test_sortedSets_ordersBySetNumber() throws {
         let entry = makeEntry(weights: [(3, 70, 9), (1, 60, 10), (2, 80, 8)])
         XCTAssertEqual(entry.sortedSets.map(\.setNumber), [1, 2, 3])
@@ -235,6 +249,42 @@ final class TrackGymTests: XCTestCase {
 
         let exercises = try context.fetch(FetchDescriptor<Exercise>())
         XCTAssertNil(exercises.first?.imageURL)
+    }
+
+    func test_import_convertsPoundBackupWeightsToStoredKilograms() throws {
+        let date = Date(timeIntervalSince1970: 1_700_000_000)
+        let payload = ExportData(
+            exercises: [
+                ExportExercise(name: "Bench Press", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: nil),
+            ],
+            workoutPlans: [],
+            workouts: [
+                ExportWorkout(
+                    name: "Push",
+                    date: date,
+                    duration: 1200,
+                    entries: [
+                        ExportWorkoutEntry(
+                            exerciseName: "Bench Press",
+                            date: date,
+                            sets: [
+                                ExportWorkoutSet(setNumber: 1, weight: 220.462, weightUnit: WeightUnit.lbs.rawValue, reps: 5),
+                            ]
+                        ),
+                    ]
+                ),
+            ]
+        )
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(payload)
+
+        try DataExporter.importData(from: data, context: context)
+
+        let sets = try context.fetch(FetchDescriptor<WorkoutSet>())
+        let importedSet = try XCTUnwrap(sets.first)
+        XCTAssertEqual(importedSet.weight, 100, accuracy: 0.001)
+        XCTAssertEqual(importedSet.weight(in: .lbs), 220.462, accuracy: 0.001)
     }
 
     func test_normalizedName_collapsesCaseWhitespaceAndDiacritics() {

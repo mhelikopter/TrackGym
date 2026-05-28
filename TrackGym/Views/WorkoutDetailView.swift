@@ -175,6 +175,10 @@ private struct WorkoutHistoryRow: View {
     let workout: Workout
     let formatDuration: (Int) -> String
 
+    private var selectedUnit: WeightUnit {
+        WeightUnit.resolved(from: weightUnit)
+    }
+
     var sortedEntries: [WorkoutEntry] {
         workout.entries.sorted { ($0.exercise?.name ?? "") < ($1.exercise?.name ?? "") }
     }
@@ -188,7 +192,7 @@ private struct WorkoutHistoryRow: View {
                         .fontWeight(.medium)
 
                     ForEach(entry.sortedSets) { set in
-                        Text("Satz \(set.setNumber): \(set.weight, specifier: "%.1f") \(weightUnit) × \(set.reps) Wdh")
+                        Text("Satz \(set.setNumber): \(set.weight(in: selectedUnit), specifier: "%.1f") \(selectedUnit.rawValue) × \(set.reps) Wdh")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -221,6 +225,10 @@ private struct ExerciseDetailRow: View {
     let exercise: Exercise
     let lastEntry: WorkoutEntry?
 
+    private var selectedUnit: WeightUnit {
+        WeightUnit.resolved(from: weightUnit)
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             ExerciseImageView(exercise: exercise, size: 48)
@@ -246,7 +254,7 @@ private struct ExerciseDetailRow: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 6) {
                                 ForEach(sets) { set in
-                                    Text("S\(set.setNumber): \(set.weight, specifier: "%.1f") \(weightUnit) × \(set.reps)")
+                                    Text("S\(set.setNumber): \(set.weight(in: selectedUnit), specifier: "%.1f") \(selectedUnit.rawValue) × \(set.reps)")
                                         .font(.caption2)
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 3)

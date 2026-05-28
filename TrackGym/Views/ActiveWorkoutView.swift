@@ -275,19 +275,21 @@ struct ActiveWorkoutView: View {
     private func sendCurrentExerciseToWatch() {
         guard let entry = workoutEntries.first,
               let exercise = entry.exercise else { return }
+        let selectedUnit = WeightUnit.resolved(from: weightUnit)
         let payload = entry.sortedSets.map {
-            WatchSetPayload(setNumber: $0.setNumber, weight: $0.weight, reps: $0.reps)
+            WatchSetPayload(setNumber: $0.setNumber, weight: $0.weight(in: selectedUnit), reps: $0.reps)
         }
         PhoneConnectivityManager.shared.sendActiveExercise(
             name: exercise.name,
             muscleGroup: exercise.muscleGroup.rawValue,
-            unit: weightUnit,
+            unit: selectedUnit.rawValue,
             sets: payload
         )
     }
 
     private func addSetFromWatch(to entry: WorkoutEntry, weight: Double, reps: Int) {
-        WorkoutHistory.appendSet(weight: weight, reps: reps, to: entry, in: modelContext)
+        let selectedUnit = WeightUnit.resolved(from: weightUnit)
+        WorkoutHistory.appendSet(weight: selectedUnit.kilograms(from: weight), reps: reps, to: entry, in: modelContext)
         sendCurrentExerciseToWatch()
     }
 
@@ -382,6 +384,17 @@ private struct ActiveSetRow: View {
     @AppStorage("weightUnit") private var weightUnit: String = WeightUnit.kg.rawValue
     @Bindable var set: WorkoutSet
 
+    private var selectedUnit: WeightUnit {
+        WeightUnit.resolved(from: weightUnit)
+    }
+
+    private var displayWeight: Binding<Double> {
+        Binding(
+            get: { set.weight(in: selectedUnit) },
+            set: { set.setWeight($0, unit: selectedUnit) }
+        )
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             Text("Satz \(set.setNumber)")
@@ -390,11 +403,11 @@ private struct ActiveSetRow: View {
                 .frame(width: 50, alignment: .leading)
 
             HStack(spacing: 4) {
-                TextField("0", value: $set.weight, format: .number)
+                TextField("0", value: displayWeight, format: .number)
                     .keyboardType(.decimalPad)
                     .textFieldStyle(.roundedBorder)
                     .frame(width: 70)
-                Text(weightUnit)
+                Text(selectedUnit.rawValue)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -418,13 +431,17 @@ private struct ActivePreviousReference: View {
     @AppStorage("weightUnit") private var weightUnit: String = WeightUnit.kg.rawValue
     let entry: WorkoutEntry
 
+    private var selectedUnit: WeightUnit {
+        WeightUnit.resolved(from: weightUnit)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Letztes Training: \(entry.date, format: .dateTime.day().month())")
                 .font(.caption)
                 .foregroundStyle(.secondary)
             ForEach(entry.sortedSets) { set in
-                Text("\(set.weight, specifier: "%.1f") \(weightUnit) × \(set.reps) Wdh")
+                Text("\(set.weight(in: selectedUnit), specifier: "%.1f") \(selectedUnit.rawValue) × \(set.reps) Wdh")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }

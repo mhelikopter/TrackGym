@@ -38,6 +38,8 @@ enum WeightUnit: String, CaseIterable {
     case kg = "kg"
     case lbs = "lbs"
 
+    private static let kilogramsPerPound = 0.45359237
+
     var displayName: String {
         switch self {
         case .kg: "Kilogramm (kg)"
@@ -46,6 +48,28 @@ enum WeightUnit: String, CaseIterable {
     }
 
     var short: String { rawValue }
+
+    static func resolved(from rawValue: String) -> WeightUnit {
+        WeightUnit(rawValue: rawValue) ?? .kg
+    }
+
+    func kilograms(from displayValue: Double) -> Double {
+        switch self {
+        case .kg:
+            displayValue
+        case .lbs:
+            displayValue * Self.kilogramsPerPound
+        }
+    }
+
+    func displayValue(fromKilograms kilograms: Double) -> Double {
+        switch self {
+        case .kg:
+            kilograms
+        case .lbs:
+            kilograms / Self.kilogramsPerPound
+        }
+    }
 }
 
 struct SettingsView: View {

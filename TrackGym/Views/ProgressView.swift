@@ -103,6 +103,10 @@ private struct OverallProgressView: View {
     @AppStorage("weightUnit") private var weightUnit: String = WeightUnit.kg.rawValue
     let exercises: [Exercise]
 
+    private var selectedUnit: WeightUnit {
+        WeightUnit.resolved(from: weightUnit)
+    }
+
     private var workouts: [Workout] {
         let entries = exercises.flatMap(\.completedWorkoutEntries)
         let keyed: [PersistentIdentifier: Workout] = entries.reduce(into: [:]) { result, entry in
@@ -117,7 +121,7 @@ private struct OverallProgressView: View {
             (
                 id: workout.persistentModelID,
                 date: workout.date,
-                volume: workout.entries.reduce(0) { $0 + $1.totalVolume }
+                volume: selectedUnit.displayValue(fromKilograms: workout.entries.reduce(0) { $0 + $1.totalVolume })
             )
         }
     }
@@ -142,19 +146,19 @@ private struct OverallProgressView: View {
                         ForEach(volumeByWorkout, id: \.id) { point in
                             LineMark(
                                 x: .value("Datum", point.date),
-                                y: .value("Volumen (\(weightUnit))", point.volume)
+                                y: .value("Volumen (\(selectedUnit.rawValue))", point.volume)
                             )
                             .interpolationMethod(.catmullRom)
                             .foregroundStyle(.blue)
 
                             PointMark(
                                 x: .value("Datum", point.date),
-                                y: .value("Volumen (\(weightUnit))", point.volume)
+                                y: .value("Volumen (\(selectedUnit.rawValue))", point.volume)
                             )
                             .foregroundStyle(.blue)
                         }
                     }
-                    .chartYAxisLabel(weightUnit)
+                    .chartYAxisLabel(selectedUnit.rawValue)
                     .chartXAxis {
                         AxisMarks(values: .automatic) { _ in
                             AxisGridLine()
@@ -177,11 +181,10 @@ private struct OverallProgressView: View {
     }
 
     private func formatWeight(_ weight: Double) -> String {
-        let unit = weightUnit
-        if weight >= 1000 {
+        if selectedUnit == .kg && weight >= 1000 {
             return String(format: "%.1f t", weight / 1000)
         }
-        return String(format: "%.0f \(unit)", weight)
+        return String(format: "%.0f \(selectedUnit.rawValue)", weight)
     }
 }
 
@@ -210,6 +213,10 @@ private struct ExerciseProgressView: View {
     @AppStorage("weightUnit") private var weightUnit: String = WeightUnit.kg.rawValue
     let exercise: Exercise
 
+    private var selectedUnit: WeightUnit {
+        WeightUnit.resolved(from: weightUnit)
+    }
+
     private var sortedEntries: [WorkoutEntry] {
         exercise.completedWorkoutEntries.sorted { $0.date < $1.date }
     }
@@ -231,19 +238,19 @@ private struct ExerciseProgressView: View {
                         ForEach(sortedEntries) { entry in
                             LineMark(
                                 x: .value("Datum", entry.date),
-                                y: .value("Gewicht (\(weightUnit))", entry.maxWeight)
+                                y: .value("Gewicht (\(selectedUnit.rawValue))", selectedUnit.displayValue(fromKilograms: entry.maxWeight))
                             )
                             .interpolationMethod(.catmullRom)
                             .foregroundStyle(.blue)
 
                             PointMark(
                                 x: .value("Datum", entry.date),
-                                y: .value("Gewicht (\(weightUnit))", entry.maxWeight)
+                                y: .value("Gewicht (\(selectedUnit.rawValue))", selectedUnit.displayValue(fromKilograms: entry.maxWeight))
                             )
                             .foregroundStyle(.blue)
                         }
                     }
-                    .chartYAxisLabel(weightUnit)
+                    .chartYAxisLabel(selectedUnit.rawValue)
                     .chartXAxis {
                         AxisMarks(values: .automatic) { _ in
                             AxisGridLine()
@@ -263,7 +270,7 @@ private struct ExerciseProgressView: View {
                             Text("Persönlicher Rekord")
                                 .font(.headline)
                             Spacer()
-                            Text("\(personalRecord, specifier: "%.1f") \(weightUnit)")
+                            Text("\(selectedUnit.displayValue(fromKilograms: personalRecord), specifier: "%.1f") \(selectedUnit.rawValue)")
                                 .font(.title2)
                                 .fontWeight(.bold)
                                 .foregroundStyle(.blue)
@@ -292,6 +299,10 @@ private struct HistoryEntryRow: View {
     let entry: WorkoutEntry
     let personalRecord: Double
 
+    private var selectedUnit: WeightUnit {
+        WeightUnit.resolved(from: weightUnit)
+    }
+
     private var isPR: Bool {
         entry.maxWeight == personalRecord && personalRecord > 0
     }
@@ -313,7 +324,7 @@ private struct HistoryEntryRow: View {
                         .clipShape(Capsule())
                 }
                 Spacer()
-                Text("Max: \(entry.maxWeight, specifier: "%.1f") \(weightUnit)")
+                Text("Max: \(selectedUnit.displayValue(fromKilograms: entry.maxWeight), specifier: "%.1f") \(selectedUnit.rawValue)")
                     .font(.subheadline)
                     .foregroundStyle(.blue)
             }
@@ -324,7 +335,7 @@ private struct HistoryEntryRow: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Spacer()
-                    Text("\(set.weight, specifier: "%.1f") \(weightUnit) × \(set.reps) Wdh")
+                    Text("\(set.weight(in: selectedUnit), specifier: "%.1f") \(selectedUnit.rawValue) × \(set.reps) Wdh")
                         .font(.caption)
                 }
             }

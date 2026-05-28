@@ -40,7 +40,12 @@ struct ExportWorkoutEntry: Codable {
 struct ExportWorkoutSet: Codable {
     var setNumber: Int
     var weight: Double
+    var weightUnit: String?
     var reps: Int
+
+    var resolvedWeightUnit: WeightUnit {
+        weightUnit.flatMap(WeightUnit.init(rawValue:)) ?? .kg
+    }
 }
 
 // MARK: - Errors
@@ -97,6 +102,7 @@ enum DataExporter {
                             ExportWorkoutSet(
                                 setNumber: set.setNumber,
                                 weight: set.weight,
+                                weightUnit: WeightUnit.kg.rawValue,
                                 reps: set.reps
                             )
                         }
@@ -191,6 +197,7 @@ enum DataExporter {
                             setNumber: setData.setNumber,
                             weight: setData.weight,
                             reps: setData.reps,
+                            unit: setData.resolvedWeightUnit,
                             workoutEntry: entry
                         )
                         context.insert(workoutSet)

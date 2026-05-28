@@ -38,6 +38,11 @@ struct TrackGymApp: App {
             ContentView()
                 .onAppear {
                     DefaultExercises.seedDefaultExercises(context: modelContainer.mainContext)
+                    do {
+                        try Exercise.backfillStableIDs(context: modelContainer.mainContext)
+                    } catch {
+                        Self.log.error("Exercise stable ID backfill failed: \(error.localizedDescription, privacy: .public)")
+                    }
                     PhoneConnectivityManager.shared.activate()
                 }
                 .modelContainer(modelContainer)

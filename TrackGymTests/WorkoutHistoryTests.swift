@@ -54,6 +54,27 @@ final class WorkoutHistoryTests: XCTestCase {
         XCTAssertNil(WorkoutHistory.previousEntry(for: bench, in: context))
     }
 
+    func test_previousEntry_matchesExerciseIdentityAfterRename() throws {
+        let exercise = makeExercise("Bench Press")
+        let entry = makeEntry(for: exercise, daysAgo: 1)
+        try context.save()
+
+        exercise.name = "Renamed Bench"
+        try context.save()
+
+        let result = WorkoutHistory.previousEntry(for: exercise, in: context)
+        XCTAssertEqual(result?.persistentModelID, entry.persistentModelID)
+    }
+
+    func test_previousEntry_doesNotMatchDifferentExerciseWithSameName() throws {
+        let original = makeExercise("Bench Press")
+        _ = makeEntry(for: original, daysAgo: 1)
+        let duplicateName = makeExercise("Bench Press")
+        try context.save()
+
+        XCTAssertNil(WorkoutHistory.previousEntry(for: duplicateName, in: context))
+    }
+
     func test_previousEntry_excludesCurrentInProgressEntries() throws {
         let exercise = makeExercise("Bench Press")
         let current = makeEntry(for: exercise, daysAgo: 1)

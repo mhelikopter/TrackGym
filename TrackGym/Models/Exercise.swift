@@ -3,6 +3,7 @@ import SwiftData
 
 @Model
 final class Exercise {
+    var stableID: UUID?
     var name: String
     var muscleGroupRaw: String
     var equipmentTypeRaw: String
@@ -25,16 +26,39 @@ final class Exercise {
         set { equipmentTypeRaw = newValue.rawValue }
     }
 
-    init(name: String, muscleGroup: MuscleGroup, equipmentType: EquipmentType, isCustom: Bool = false) {
+    init(name: String, muscleGroup: MuscleGroup, equipmentType: EquipmentType, isCustom: Bool = false, stableID: UUID = UUID()) {
+        self.stableID = stableID
         self.name = name
         self.muscleGroupRaw = muscleGroup.rawValue
         self.equipmentTypeRaw = equipmentType.rawValue
         self.isCustom = isCustom
     }
 
+    @discardableResult
+    func ensureStableID() -> UUID {
+        if let stableID {
+            return stableID
+        }
+        let stableID = UUID()
+        self.stableID = stableID
+        return stableID
+    }
+
     static func normalizedName(_ name: String) -> String {
         name
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
+    }
+
+    static func backfillStableIDs(context: ModelContext) throws {
+        let exercises = try context.fetch(FetchDescriptor<Exercise>())
+        var changed = false
+        for exercise in exercises where exercise.stableID == nil {
+            exercise.stableID = UUID()
+            changed = true
+        }
+        if changed {
+            try context.save()
+        }
     }
 }

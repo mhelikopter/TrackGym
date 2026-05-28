@@ -133,6 +133,19 @@ final class TrackGymTests: XCTestCase {
         XCTAssertEqual(count, 0)
     }
 
+    // MARK: - Exercise identity
+
+    func test_backfillStableIDs_assignsMissingExerciseIDs() throws {
+        let exercise = Exercise(name: "Legacy Bench", muscleGroup: .chest, equipmentType: .freeWeight)
+        exercise.stableID = nil
+        context.insert(exercise)
+        try context.save()
+
+        try Exercise.backfillStableIDs(context: context)
+
+        XCTAssertNotNil(exercise.stableID)
+    }
+
     // MARK: - DataExporter round-trip
 
     func test_export_then_import_preservesExercises() throws {
@@ -183,6 +196,49 @@ final class TrackGymTests: XCTestCase {
         XCTAssertEqual(restoredEntry.sortedSets.map(\.reps), [5, 5])
     }
 
+    func test_import_usesExerciseIDBeforeLegacyName() throws {
+        let exerciseID = UUID()
+        let date = Date(timeIntervalSince1970: 1_700_000_000)
+        let payload = ExportData(
+            exercises: [
+                ExportExercise(id: exerciseID.uuidString, name: "Renamed Bench", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: nil),
+            ],
+            workoutPlans: [
+                ExportWorkoutPlan(name: "Push", exerciseIDs: [exerciseID.uuidString], exerciseNames: ["Old Bench"]),
+            ],
+            workouts: [
+                ExportWorkout(
+                    name: "Push",
+                    date: date,
+                    duration: 1800,
+                    entries: [
+                        ExportWorkoutEntry(
+                            exerciseID: exerciseID.uuidString,
+                            exerciseName: "Old Bench",
+                            date: date,
+                            sets: [
+                                ExportWorkoutSet(setNumber: 1, weight: 100, weightUnit: WeightUnit.kg.rawValue, reps: 5),
+                            ]
+                        ),
+                    ]
+                ),
+            ]
+        )
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(payload)
+
+        try DataExporter.importData(from: data, context: context)
+
+        let workouts = try context.fetch(FetchDescriptor<Workout>())
+        let restoredEntry = try XCTUnwrap(workouts.first?.entries.first)
+        XCTAssertEqual(restoredEntry.exercise?.stableID, exerciseID)
+        XCTAssertEqual(restoredEntry.exercise?.name, "Renamed Bench")
+
+        let plans = try context.fetch(FetchDescriptor<WorkoutPlan>())
+        XCTAssertEqual(plans.first?.exercises.first?.stableID, exerciseID)
+    }
+
     func test_import_invalidJSON_doesNotDestroyExistingData() throws {
         let exercise = Exercise(name: "Existing", muscleGroup: .chest, equipmentType: .freeWeight)
         context.insert(exercise)
@@ -198,8 +254,8 @@ final class TrackGymTests: XCTestCase {
     func test_import_rejectsDuplicateExerciseNames_caseInsensitive() throws {
         let payload = ExportData(
             exercises: [
-                ExportExercise(name: "Bench Press", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: nil),
-                ExportExercise(name: " bench press ", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.machine.rawValue, isCustom: true, imageURL: nil),
+                ExportExercise(id: nil, name: "Bench Press", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: nil),
+                ExportExercise(id: nil, name: " bench press ", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.machine.rawValue, isCustom: true, imageURL: nil),
             ],
             workoutPlans: [],
             workouts: []
@@ -215,10 +271,32 @@ final class TrackGymTests: XCTestCase {
         }
     }
 
+    func test_import_rejectsDuplicateExerciseIDs() throws {
+        let exerciseID = UUID().uuidString
+        let payload = ExportData(
+            exercises: [
+                ExportExercise(id: exerciseID, name: "Bench Press", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: nil),
+                ExportExercise(id: exerciseID, name: "Squat", muscleGroup: MuscleGroup.legs.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: nil),
+            ],
+            workoutPlans: [],
+            workouts: []
+        )
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(payload)
+
+        XCTAssertThrowsError(try DataExporter.importData(from: data, context: context)) { error in
+            guard case DataExporterError.duplicateExerciseIDs = error else {
+                return XCTFail("Unexpected error: \(error)")
+            }
+        }
+    }
+
+
     func test_import_stripsHTTPExerciseImageURL() throws {
         let payload = ExportData(
             exercises: [
-                ExportExercise(name: "Bench Press", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: "http://example.com/image.png"),
+                ExportExercise(id: nil, name: "Bench Press", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: "http://example.com/image.png"),
             ],
             workoutPlans: [],
             workouts: []
@@ -236,7 +314,7 @@ final class TrackGymTests: XCTestCase {
     func test_import_stripsHTTPSExerciseImageURL() throws {
         let payload = ExportData(
             exercises: [
-                ExportExercise(name: "Bench Press", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: "https://example.com/image.png"),
+                ExportExercise(id: nil, name: "Bench Press", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: "https://example.com/image.png"),
             ],
             workoutPlans: [],
             workouts: []
@@ -255,7 +333,7 @@ final class TrackGymTests: XCTestCase {
         let date = Date(timeIntervalSince1970: 1_700_000_000)
         let payload = ExportData(
             exercises: [
-                ExportExercise(name: "Bench Press", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: nil),
+                ExportExercise(id: nil, name: "Bench Press", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: nil),
             ],
             workoutPlans: [],
             workouts: [
@@ -265,6 +343,7 @@ final class TrackGymTests: XCTestCase {
                     duration: 1200,
                     entries: [
                         ExportWorkoutEntry(
+                            exerciseID: nil,
                             exerciseName: "Bench Press",
                             date: date,
                             sets: [

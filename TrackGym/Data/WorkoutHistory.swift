@@ -12,17 +12,15 @@ enum WorkoutHistory {
         activeWorkout: Workout? = nil
     ) -> WorkoutEntry? {
         guard let exercise else { return nil }
-        let exerciseName = exercise.name
         // Fetch all entries for this exercise sorted by date desc, then exclude
         // entries belonging to the active workout client-side. The previous
         // implementation used `fetchLimit = 5`, which could return `nil` when
         // the active workout itself contained 5+ entries for the same exercise
         // (MHE-8). SwiftData's `#Predicate` macro does not support filtering
-        // by a Swift `Set<PersistentIdentifier>`, so the exclusion remains
-        // client-side, but the limit is dropped so we never miss a true
-        // previous entry.
+        // by a Swift `Set<PersistentIdentifier>`, so identity filtering and
+        // exclusion remain client-side, but the limit is dropped so we never
+        // miss a true previous entry.
         let descriptor = FetchDescriptor<WorkoutEntry>(
-            predicate: #Predicate { $0.exercise?.name == exerciseName },
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
         let entries: [WorkoutEntry]
@@ -37,9 +35,11 @@ enum WorkoutHistory {
             log.error("previousEntry fetch failed: \(error.localizedDescription, privacy: .public)")
             return nil
         }
+        let exerciseID = exercise.persistentModelID
         let currentIDs = Set(currentEntries.map(\.persistentModelID))
         let activeID = activeWorkout?.persistentModelID
         return entries.first { entry in
+            entry.exercise?.persistentModelID == exerciseID &&
             !currentIDs.contains(entry.persistentModelID) &&
             (activeID == nil || entry.workout?.persistentModelID != activeID)
         }

@@ -10,6 +10,7 @@ struct ExportData: Codable {
 }
 
 struct ExportExercise: Codable {
+    var id: String?
     var name: String
     var muscleGroup: String
     var equipmentType: String
@@ -19,6 +20,7 @@ struct ExportExercise: Codable {
 
 struct ExportWorkoutPlan: Codable {
     var name: String
+    var exerciseIDs: [String]?
     var exerciseNames: [String]
 }
 
@@ -30,6 +32,7 @@ struct ExportWorkout: Codable {
 }
 
 struct ExportWorkoutEntry: Codable {
+    var exerciseID: String?
     /// Optional so entries whose exercise was deleted (or never linked) survive
     /// a round-trip without being silently dropped on import.
     var exerciseName: String?
@@ -54,12 +57,18 @@ enum DataExporterError: LocalizedError {
     /// Two or more exercises in the export share the same name, which would
     /// silently merge them on import and re-link history to the wrong row.
     case duplicateExerciseNames([String])
+    /// Two or more exercises in the export share the same stable identity,
+    /// which would make ID-based re-linking ambiguous.
+    case duplicateExerciseIDs([String])
 
     var errorDescription: String? {
         switch self {
         case .duplicateExerciseNames(let names):
             let joined = names.joined(separator: ", ")
             return "Import abgebrochen: doppelte Übungsnamen erkannt (\(joined))."
+        case .duplicateExerciseIDs(let ids):
+            let joined = ids.joined(separator: ", ")
+            return "Import abgebrochen: doppelte Übungs-IDs erkannt (\(joined))."
         }
     }
 }
@@ -74,6 +83,7 @@ enum DataExporter {
 
         let exportExercises = exercises.map { exercise in
             ExportExercise(
+                id: exercise.ensureStableID().uuidString,
                 name: exercise.name,
                 muscleGroup: exercise.muscleGroupRaw,
                 equipmentType: exercise.equipmentTypeRaw,
@@ -85,6 +95,7 @@ enum DataExporter {
         let exportPlans = plans.map { plan in
             ExportWorkoutPlan(
                 name: plan.name,
+                exerciseIDs: plan.exercises.map { $0.ensureStableID().uuidString },
                 exerciseNames: plan.exercises.map(\.name)
             )
         }
@@ -96,6 +107,7 @@ enum DataExporter {
                 duration: workout.duration,
                 entries: workout.entries.map { entry in
                     ExportWorkoutEntry(
+                        exerciseID: entry.exercise?.ensureStableID().uuidString,
                         exerciseName: entry.exercise?.name,
                         date: entry.date,
                         sets: entry.sortedSets.map { set in
@@ -144,6 +156,15 @@ enum DataExporter {
         if !duplicates.isEmpty {
             throw DataExporterError.duplicateExerciseNames(duplicates)
         }
+        let duplicateIDs = importData.exercises
+            .compactMap(\.id)
+            .reduce(into: [String: Int]()) { counts, id in counts[id, default: 0] += 1 }
+            .filter { $0.value > 1 }
+            .map(\.key)
+            .sorted()
+        if !duplicateIDs.isEmpty {
+            throw DataExporterError.duplicateExerciseIDs(duplicateIDs)
+        }
 
         do {
             // MHE-7: Delete only the roots and let SwiftData's cascade rules
@@ -154,23 +175,33 @@ enum DataExporter {
             try deleteAll(WorkoutPlan.self, in: context)
             try deleteAll(Exercise.self, in: context)
 
-            var exerciseMap: [String: Exercise] = [:]
+            var exerciseMapByID: [String: Exercise] = [:]
+            var exerciseMapByName: [String: Exercise] = [:]
             for ex in importData.exercises {
+                let stableID = ex.id.flatMap(UUID.init(uuidString:)) ?? UUID()
                 let exercise = Exercise(
                     name: ex.name,
                     muscleGroup: MuscleGroup(rawValue: ex.muscleGroup) ?? .chest,
                     equipmentType: EquipmentType(rawValue: ex.equipmentType) ?? .machine,
-                    isCustom: ex.isCustom
+                    isCustom: ex.isCustom,
+                    stableID: stableID
                 )
                 exercise.imageURL = nil
                 context.insert(exercise)
-                exerciseMap[Exercise.normalizedName(ex.name)] = exercise
+                if let id = ex.id {
+                    exerciseMapByID[id] = exercise
+                }
+                exerciseMapByName[Exercise.normalizedName(ex.name)] = exercise
             }
 
             for planData in importData.workoutPlans {
                 let plan = WorkoutPlan(name: planData.name)
-                plan.exercises = planData.exerciseNames.compactMap {
-                    exerciseMap[Exercise.normalizedName($0)]
+                if let exerciseIDs = planData.exerciseIDs {
+                    plan.exercises = exerciseIDs.compactMap { exerciseMapByID[$0] }
+                } else {
+                    plan.exercises = planData.exerciseNames.compactMap {
+                        exerciseMapByName[Exercise.normalizedName($0)]
+                    }
                 }
                 context.insert(plan)
             }
@@ -185,9 +216,8 @@ enum DataExporter {
                     // export with an empty string). The Workout model already
                     // tolerates `exercise: nil`, so dropping these silently
                     // was the only thing causing data loss.
-                    let exercise: Exercise? = entryData.exerciseName.flatMap {
-                        exerciseMap[Exercise.normalizedName($0)]
-                    }
+                    let exercise = entryData.exerciseID.flatMap { exerciseMapByID[$0] }
+                        ?? entryData.exerciseName.flatMap { exerciseMapByName[Exercise.normalizedName($0)] }
                     let entry = WorkoutEntry(date: entryData.date, exercise: exercise)
                     entry.workout = workout
                     context.insert(entry)

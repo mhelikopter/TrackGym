@@ -23,8 +23,8 @@ struct WorkoutDetailView: View {
     }
 
     func lastEntry(for exercise: Exercise) -> WorkoutEntry? {
-        let name = exercise.name
-        return allEntries.first { $0.exercise?.name == name && $0.workout != nil }
+        let exerciseID = exercise.persistentModelID
+        return allEntries.first { $0.exercise?.persistentModelID == exerciseID && $0.workout != nil }
     }
 
     func formatDuration(_ seconds: Int) -> String {

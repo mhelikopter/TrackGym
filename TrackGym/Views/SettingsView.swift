@@ -2,6 +2,8 @@ import SwiftUI
 import SwiftData
 import UniformTypeIdentifiers
 
+private let maximumBackupImportFileSize = 10 * 1024 * 1024
+
 enum AppColorScheme: String, CaseIterable {
     case system = "system"
     case light = "light"
@@ -57,6 +59,7 @@ struct SettingsView: View {
     @State private var showingImportConfirmation = false
     @State private var importFileURL: URL?
     @State private var exportData: Data?
+    @State private var isImporting = false
     @State private var alertMessage = ""
     @State private var showingAlert = false
 
@@ -118,10 +121,19 @@ struct SettingsView: View {
                 } label: {
                     Label("Daten importieren", systemImage: "square.and.arrow.down")
                 }
+                .disabled(isImporting)
+
+                if isImporting {
+                    HStack {
+                        ProgressView()
+                        Text("Import läuft …")
+                            .foregroundStyle(.secondary)
+                    }
+                }
             } header: {
                 Text("Backup")
             } footer: {
-                Text("Exportiert alle Daten als JSON-Datei. Beim Import werden bestehende Daten ersetzt.")
+                Text("Exportiert alle Daten als JSON-Datei. Beim Import werden bestehende Daten ersetzt. Importdateien dürfen maximal 10 MB groß sein.")
             }
 
             Section {
@@ -180,6 +192,7 @@ struct SettingsView: View {
             Button("Importieren und ersetzen", role: .destructive) {
                 performImport()
             }
+            .disabled(isImporting)
             Button("Abbrechen", role: .cancel) {
                 importFileURL = nil
             }
@@ -230,25 +243,41 @@ struct SettingsView: View {
     }
 
     private func performImport() {
-        guard let url = importFileURL else { return }
-        defer { importFileURL = nil }
+        guard let url = importFileURL, !isImporting else { return }
+        importFileURL = nil
+        isImporting = true
 
-        do {
+        Task {
+            do {
+                let data = try await Self.loadImportData(from: url)
+                try DataExporter.importData(from: data, context: modelContext)
+                alertMessage = "Daten erfolgreich importiert."
+            } catch {
+                alertMessage = "Import fehlgeschlagen: \(error.localizedDescription)"
+            }
+            isImporting = false
+            showingAlert = true
+        }
+    }
+
+    private static func loadImportData(from url: URL) async throws -> Data {
+        let maximumFileSize = maximumBackupImportFileSize
+        return try await Task.detached(priority: .userInitiated) {
             guard url.startAccessingSecurityScopedResource() else {
-                alertMessage = "Kein Zugriff auf die Datei."
-                showingAlert = true
-                return
+                throw BackupImportError.fileAccessDenied
             }
             defer { url.stopAccessingSecurityScopedResource() }
 
-            let data = try Data(contentsOf: url)
-            try DataExporter.importData(from: data, context: modelContext)
-            alertMessage = "Daten erfolgreich importiert."
-            showingAlert = true
-        } catch {
-            alertMessage = "Import fehlgeschlagen: \(error.localizedDescription)"
-            showingAlert = true
-        }
+            let values = try url.resourceValues(forKeys: [.fileSizeKey])
+            guard let fileSize = values.fileSize else {
+                throw BackupImportError.fileSizeUnavailable
+            }
+            guard fileSize <= maximumFileSize else {
+                throw BackupImportError.fileTooLarge(maximumBytes: maximumFileSize)
+            }
+
+            return try Data(contentsOf: url, options: [.mappedIfSafe])
+        }.value
     }
 
     // MARK: - Delete
@@ -314,5 +343,22 @@ struct JSONDocument: FileDocument {
 
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
         FileWrapper(regularFileWithContents: data)
+    }
+}
+
+private enum BackupImportError: LocalizedError {
+    case fileAccessDenied
+    case fileSizeUnavailable
+    case fileTooLarge(maximumBytes: Int)
+
+    var errorDescription: String? {
+        switch self {
+        case .fileAccessDenied:
+            "Kein Zugriff auf die Datei."
+        case .fileSizeUnavailable:
+            "Die Dateigröße konnte nicht ermittelt werden."
+        case .fileTooLarge(let maximumBytes):
+            "Die Datei ist größer als \(maximumBytes / 1024 / 1024) MB."
+        }
     }
 }

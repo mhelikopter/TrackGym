@@ -138,6 +138,14 @@ private struct OverallProgressView: View {
         totalWorkouts > 0 ? totalVolume / Double(totalWorkouts) : 0
     }
 
+    @State private var volumePeriod: VolumePeriod = .week
+
+    private var muscleVolumeData: [(group: MuscleGroup, volume: Double)] {
+        let entries = exercises.flatMap(\.workoutEntries)
+        return TrainingStatistics.volumeByMuscleGroup(entries: entries, since: volumePeriod.since)
+            .map { (group: $0.group, volume: selectedUnit.displayValue(fromKilograms: $0.volumeKg)) }
+    }
+
     var body: some View {
         List {
             if !volumeByWorkout.isEmpty {
@@ -175,6 +183,34 @@ private struct OverallProgressView: View {
                     StatRow(icon: "scalemass.fill", label: "Gesamtvolumen", value: formatWeight(totalVolume))
                     StatRow(icon: "chart.bar.fill", label: "Ø Volumen pro Training", value: formatWeight(averageVolume))
                     StatRow(icon: "dumbbell.fill", label: "Übungen trainiert", value: "\(exercises.count)")
+                }
+
+                Section("Volumen pro Muskelgruppe") {
+                    Picker("Zeitraum", selection: $volumePeriod) {
+                        ForEach(VolumePeriod.allCases) { period in
+                            Text(period.rawValue).tag(period)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    if muscleVolumeData.isEmpty {
+                        Text("Keine Trainings im gewählten Zeitraum.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Chart {
+                            ForEach(muscleVolumeData, id: \.group) { item in
+                                BarMark(
+                                    x: .value("Volumen (\(selectedUnit.rawValue))", item.volume),
+                                    y: .value("Muskelgruppe", item.group.displayName)
+                                )
+                                .foregroundStyle(.blue)
+                            }
+                        }
+                        .chartXAxisLabel(selectedUnit.rawValue)
+                        .frame(height: CGFloat(muscleVolumeData.count) * 36 + 24)
+                        .padding(.vertical, 4)
+                    }
                 }
             }
         }
@@ -291,6 +327,23 @@ private struct ExerciseProgressView: View {
 private extension Exercise {
     var completedWorkoutEntries: [WorkoutEntry] {
         workoutEntries.filter { $0.workout != nil }
+    }
+}
+
+private enum VolumePeriod: String, CaseIterable, Identifiable {
+    case week = "Woche"
+    case month = "Monat"
+    case all = "Gesamt"
+
+    var id: String { rawValue }
+
+    /// Rollierendes Fenster (7/30 Tage), kein Kalenderbezug.
+    var since: Date? {
+        switch self {
+        case .week: Calendar.current.date(byAdding: .day, value: -7, to: Date())
+        case .month: Calendar.current.date(byAdding: .day, value: -30, to: Date())
+        case .all: nil
+        }
     }
 }
 

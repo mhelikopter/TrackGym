@@ -19,6 +19,9 @@ struct ExportExercise: Codable {
 }
 
 struct ExportWorkoutPlan: Codable {
+    /// File-scoped identifier so workouts can reference their plan.
+    /// Only unique within one export file; not a persistent ID.
+    var id: String?
     var name: String
     var exerciseIDs: [String]?
     var exerciseNames: [String]
@@ -26,6 +29,10 @@ struct ExportWorkoutPlan: Codable {
 
 struct ExportWorkout: Codable {
     var name: String
+    /// References `ExportWorkoutPlan.id` within the same file. `planName` is
+    /// the fallback for hand-edited files that carry no plan ids.
+    var planID: String?
+    var planName: String?
     var date: Date
     var duration: Int
     var entries: [ExportWorkoutEntry]
@@ -92,8 +99,12 @@ enum DataExporter {
             )
         }
 
-        let exportPlans = plans.map { plan in
-            ExportWorkoutPlan(
+        var planExportIDs: [PersistentIdentifier: String] = [:]
+        let exportPlans = plans.enumerated().map { index, plan in
+            let exportID = String(index)
+            planExportIDs[plan.persistentModelID] = exportID
+            return ExportWorkoutPlan(
+                id: exportID,
                 name: plan.name,
                 exerciseIDs: plan.exercises.map { $0.ensureStableID().uuidString },
                 exerciseNames: plan.exercises.map(\.name)
@@ -103,6 +114,8 @@ enum DataExporter {
         let exportWorkouts = workouts.map { workout in
             ExportWorkout(
                 name: workout.name,
+                planID: workout.plan.flatMap { planExportIDs[$0.persistentModelID] },
+                planName: workout.plan?.name,
                 date: workout.date,
                 duration: workout.duration,
                 entries: workout.entries.map { entry in
@@ -156,8 +169,12 @@ enum DataExporter {
         if !duplicates.isEmpty {
             throw DataExporterError.duplicateExerciseNames(duplicates)
         }
+        // Normalize through UUID parsing before checking: UUID(uuidString:) is
+        // case-insensitive, so the same UUID in upper- and lowercase must count
+        // as a duplicate — otherwise both exercises silently share a stableID
+        // and the next export becomes un-importable.
         let duplicateIDs = importData.exercises
-            .compactMap(\.id)
+            .compactMap { $0.id.flatMap(Self.normalizedUUIDString) }
             .reduce(into: [String: Int]()) { counts, id in counts[id, default: 0] += 1 }
             .filter { $0.value > 1 }
             .map(\.key)
@@ -179,35 +196,57 @@ enum DataExporter {
             var exerciseMapByName: [String: Exercise] = [:]
             for ex in importData.exercises {
                 let stableID = ex.id.flatMap(UUID.init(uuidString:)) ?? UUID()
+                // Construct with .unknown, then restore the raw strings
+                // verbatim: unknown categories from a newer app version (or an
+                // edited file) must survive the round-trip instead of being
+                // silently reclassified as chest/machine. The computed getters
+                // already fall back to .unknown for display.
                 let exercise = Exercise(
                     name: ex.name,
-                    muscleGroup: MuscleGroup(rawValue: ex.muscleGroup) ?? .chest,
-                    equipmentType: EquipmentType(rawValue: ex.equipmentType) ?? .machine,
+                    muscleGroup: .unknown,
+                    equipmentType: .unknown,
                     isCustom: ex.isCustom,
                     stableID: stableID
                 )
+                exercise.muscleGroupRaw = ex.muscleGroup
+                exercise.equipmentTypeRaw = ex.equipmentType
                 exercise.imageURL = nil
                 context.insert(exercise)
-                if let id = ex.id {
-                    exerciseMapByID[id] = exercise
+                if let normalizedID = ex.id.flatMap(Self.normalizedUUIDString) {
+                    exerciseMapByID[normalizedID] = exercise
                 }
                 exerciseMapByName[Exercise.normalizedName(ex.name)] = exercise
             }
 
+            var planMapByExportID: [String: WorkoutPlan] = [:]
+            var planMapByName: [String: WorkoutPlan] = [:]
             for planData in importData.workoutPlans {
                 let plan = WorkoutPlan(name: planData.name)
                 if let exerciseIDs = planData.exerciseIDs {
-                    plan.exercises = exerciseIDs.compactMap { exerciseMapByID[$0] }
+                    plan.exercises = exerciseIDs.compactMap {
+                        Self.normalizedUUIDString($0).flatMap { exerciseMapByID[$0] }
+                    }
                 } else {
                     plan.exercises = planData.exerciseNames.compactMap {
                         exerciseMapByName[Exercise.normalizedName($0)]
                     }
                 }
                 context.insert(plan)
+                if let id = planData.id {
+                    planMapByExportID[id] = plan
+                }
+                if planMapByName[planData.name] == nil {
+                    planMapByName[planData.name] = plan
+                }
             }
 
             for workoutData in importData.workouts {
                 let workout = Workout(name: workoutData.name, date: workoutData.date, duration: workoutData.duration)
+                // Restore the plan link so per-plan history (WorkoutDetailView)
+                // survives a backup round-trip; fall back to the plan name for
+                // files that carry no plan ids.
+                workout.plan = workoutData.planID.flatMap { planMapByExportID[$0] }
+                    ?? workoutData.planName.flatMap { planMapByName[$0] }
                 context.insert(workout)
 
                 for entryData in workoutData.entries {
@@ -216,7 +255,9 @@ enum DataExporter {
                     // export with an empty string). The Workout model already
                     // tolerates `exercise: nil`, so dropping these silently
                     // was the only thing causing data loss.
-                    let exercise = entryData.exerciseID.flatMap { exerciseMapByID[$0] }
+                    let exercise = entryData.exerciseID
+                        .flatMap(Self.normalizedUUIDString)
+                        .flatMap { exerciseMapByID[$0] }
                         ?? entryData.exerciseName.flatMap { exerciseMapByName[Exercise.normalizedName($0)] }
                     let entry = WorkoutEntry(date: entryData.date, exercise: exercise)
                     entry.workout = workout
@@ -246,5 +287,12 @@ enum DataExporter {
     private static func deleteAll<T: PersistentModel>(_ type: T.Type, in context: ModelContext) throws {
         let items = try context.fetch(FetchDescriptor<T>())
         for item in items { context.delete(item) }
+    }
+
+    /// Canonical (uppercase) UUID string, or nil for unparseable input.
+    /// Used for duplicate detection and map keys so case variants of the
+    /// same UUID cannot slip past the checks.
+    private static func normalizedUUIDString(_ raw: String) -> String? {
+        UUID(uuidString: raw)?.uuidString
     }
 }

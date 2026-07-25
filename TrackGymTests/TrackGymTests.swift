@@ -403,6 +403,149 @@ final class TrackGymTests: XCTestCase {
         ))
     }
 
+    // MARK: - Workout-plan link (MHE-27)
+
+    func test_export_then_import_preservesWorkoutPlanLink() throws {
+        let exercise = Exercise(name: "Squat", muscleGroup: .legs, equipmentType: .freeWeight)
+        context.insert(exercise)
+        let plan = WorkoutPlan(name: "Leg Day")
+        plan.exercises = [exercise]
+        context.insert(plan)
+        let workout = Workout(name: "Leg Day", date: Date(timeIntervalSince1970: 1_700_000_000), duration: 3600)
+        workout.plan = plan
+        context.insert(workout)
+        try context.save()
+
+        let exported = try DataExporter.exportData(context: context)
+        try DataExporter.importData(from: exported, context: context)
+
+        let workouts = try context.fetch(FetchDescriptor<Workout>())
+        let restored = try XCTUnwrap(workouts.first)
+        XCTAssertEqual(restored.plan?.name, "Leg Day")
+    }
+
+    func test_import_fallsBackToPlanName_whenFileHasNoPlanIDs() throws {
+        let payload = ExportData(
+            exercises: [],
+            workoutPlans: [
+                ExportWorkoutPlan(name: "Push", exerciseIDs: nil, exerciseNames: []),
+            ],
+            workouts: [
+                ExportWorkout(
+                    name: "Push",
+                    planName: "Push",
+                    date: Date(timeIntervalSince1970: 1_700_000_000),
+                    duration: 600,
+                    entries: []
+                ),
+            ]
+        )
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(payload)
+
+        try DataExporter.importData(from: data, context: context)
+
+        let workouts = try context.fetch(FetchDescriptor<Workout>())
+        XCTAssertEqual(workouts.first?.plan?.name, "Push")
+    }
+
+    func test_deletePlan_nullifiesWorkoutPlanReference() throws {
+        let plan = WorkoutPlan(name: "Pull")
+        context.insert(plan)
+        let workout = Workout(name: "Pull", date: Date(), duration: 100)
+        workout.plan = plan
+        context.insert(workout)
+        try context.save()
+
+        context.delete(plan)
+        try context.save()
+
+        let workouts = try context.fetch(FetchDescriptor<Workout>())
+        let survivor = try XCTUnwrap(workouts.first)
+        XCTAssertNil(survivor.plan)
+    }
+
+    // MARK: - Import robustness (MHE-28, MHE-29)
+
+    func test_import_preservesUnknownMuscleGroupAndEquipmentRaw() throws {
+        let payload = ExportData(
+            exercises: [
+                ExportExercise(id: nil, name: "Neck Curls", muscleGroup: "neck", equipmentType: "resistance_band", isCustom: true, imageURL: nil),
+            ],
+            workoutPlans: [],
+            workouts: []
+        )
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(payload)
+
+        try DataExporter.importData(from: data, context: context)
+
+        let exercises = try context.fetch(FetchDescriptor<Exercise>())
+        let imported = try XCTUnwrap(exercises.first)
+        XCTAssertEqual(imported.muscleGroupRaw, "neck")
+        XCTAssertEqual(imported.equipmentTypeRaw, "resistance_band")
+        XCTAssertEqual(imported.muscleGroup, .unknown)
+        XCTAssertEqual(imported.equipmentType, .unknown)
+    }
+
+    func test_import_rejectsDuplicateExerciseIDs_caseInsensitive() throws {
+        let exerciseID = UUID().uuidString
+        let payload = ExportData(
+            exercises: [
+                ExportExercise(id: exerciseID.uppercased(), name: "Bench Press", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: nil),
+                ExportExercise(id: exerciseID.lowercased(), name: "Squat", muscleGroup: MuscleGroup.legs.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: nil),
+            ],
+            workoutPlans: [],
+            workouts: []
+        )
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(payload)
+
+        XCTAssertThrowsError(try DataExporter.importData(from: data, context: context)) { error in
+            guard case DataExporterError.duplicateExerciseIDs = error else {
+                return XCTFail("Unexpected error: \(error)")
+            }
+        }
+    }
+
+    func test_import_resolvesLowercaseExerciseIDReferences() throws {
+        let exerciseID = UUID()
+        let date = Date(timeIntervalSince1970: 1_700_000_000)
+        let payload = ExportData(
+            exercises: [
+                ExportExercise(id: exerciseID.uuidString, name: "Bench", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: nil),
+            ],
+            workoutPlans: [],
+            workouts: [
+                ExportWorkout(
+                    name: "Push",
+                    date: date,
+                    duration: 600,
+                    entries: [
+                        ExportWorkoutEntry(
+                            exerciseID: exerciseID.uuidString.lowercased(),
+                            exerciseName: nil,
+                            date: date,
+                            sets: []
+                        ),
+                    ]
+                ),
+            ]
+        )
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(payload)
+
+        try DataExporter.importData(from: data, context: context)
+
+        let workouts = try context.fetch(FetchDescriptor<Workout>())
+        let entry = try XCTUnwrap(workouts.first?.entries.first)
+        XCTAssertEqual(entry.exercise?.stableID, exerciseID)
+    }
+
     // MARK: - Helpers
 
     private func makeEntry(weights: [(setNumber: Int, weight: Double, reps: Int)]) -> WorkoutEntry {

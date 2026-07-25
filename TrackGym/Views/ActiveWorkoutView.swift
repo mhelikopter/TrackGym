@@ -41,6 +41,11 @@ struct ActiveWorkoutView: View {
                         Label("Keine Übungen", systemImage: "figure.strengthtraining.traditional")
                     } description: {
                         Text("Der Plan enthält keine Übungen.")
+                    } actions: {
+                        Button("Übung hinzufügen") {
+                            showingAddExercise = true
+                        }
+                        .buttonStyle(.borderedProminent)
                     }
                 } else {
                     List {
@@ -62,7 +67,8 @@ struct ActiveWorkoutView: View {
                             ActiveEntrySection(
                                 entry: entry,
                                 previousEntry: cachedPreviousEntry(for: entry.exercise),
-                                onSave: { saveEntry(entry) }
+                                onSave: { saveEntry(entry) },
+                                onSetsChanged: { sendCurrentExerciseToWatch() }
                             )
                         }
 
@@ -97,31 +103,28 @@ struct ActiveWorkoutView: View {
                 startTime = Date()
                 setupExercises()
                 sendCurrentExerciseToWatch()
+                registerWatchAddSetHandler()
+            }
+            .onDisappear {
+                PhoneConnectivityManager.shared.addSetHandler = nil
             }
             .onChange(of: workoutDate) { _, newDate in
                 for entry in workoutEntries {
                     entry.date = newDate
                 }
-                activeWorkout?.date = newDate
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .watchDidAddSet)) { notification in
-                guard let info = notification.userInfo,
-                      let weight = info["weight"] as? Double,
-                      let reps = info["reps"] as? Int,
-                      let entry = workoutEntries.first,
-                      let currentName = entry.exercise?.name else { return }
-                if let expected = info["exerciseName"] as? String,
-                   !expected.isEmpty,
-                   expected != currentName {
-                    return
+                // Entries already saved via the checkmark left `workoutEntries`
+                // but must follow a retroactive date change too, or they stay
+                // permanently dated on the original day.
+                for entry in activeWorkout?.entries ?? [] {
+                    entry.date = newDate
                 }
-                addSetFromWatch(to: entry, weight: weight, reps: reps)
+                activeWorkout?.date = newDate
             }
             .alert("Training abbrechen?", isPresented: $showingCancelAlert) {
                 Button("Training abbrechen", role: .destructive) { cancelWorkout() }
                 Button("Weiter trainieren", role: .cancel) {}
             } message: {
-                Text("Alle nicht gespeicherten Sätze gehen verloren.")
+                Text("Nicht gespeicherte Übungen gehen verloren. Bereits mit ✓ gespeicherte Übungen bleiben erhalten.")
             }
             .alert("Training beenden?", isPresented: $showingFinishAlert) {
                 Button("Beenden & speichern") { finishAllAndEnd() }
@@ -246,18 +249,21 @@ struct ActiveWorkoutView: View {
     }
 
     private func cancelWorkout() {
-        // Delete any pending in-memory entries that were never attached to a
-        // workout. Entries already linked to `activeWorkout` will be removed by
-        // the cascade rule on `Workout.entries` when we delete the workout.
+        // Delete only the pending in-memory entries that were never attached
+        // to a workout. Entries the user explicitly saved with the checkmark
+        // are already committed to disk — the cancel alert promises they stay.
         for entry in workoutEntries where entry.workout == nil {
             modelContext.delete(entry)
         }
 
-        // If the user already saved at least one entry mid-workout, the
-        // partial `Workout` was inserted into the context. Without this delete
-        // it would be silently persisted (potentially with zero entries).
+        // Keep the partial Workout if it holds saved entries; delete it only
+        // when nothing was ever saved (an empty workout must not persist).
         if let workout = activeWorkout {
-            modelContext.delete(workout)
+            if workout.entries.isEmpty {
+                modelContext.delete(workout)
+            } else {
+                workout.duration = elapsedSeconds(now: Date())
+            }
         }
 
         guard persistWorkoutChanges(
@@ -293,6 +299,28 @@ struct ActiveWorkoutView: View {
         sendCurrentExerciseToWatch()
     }
 
+    private func registerWatchAddSetHandler() {
+        PhoneConnectivityManager.shared.addSetHandler = { request in
+            guard let entry = workoutEntries.first,
+                  let currentName = entry.exercise?.name else { return false }
+            // A set queued while unreachable during an *earlier* workout must
+            // not land in this one. 120s grace absorbs clock drift between
+            // the paired devices.
+            if let sentAt = request.sentAt,
+               sentAt < startTime.timeIntervalSince1970 - 120 {
+                return false
+            }
+            if let expected = request.exerciseName, expected != currentName {
+                // The watch shows a stale exercise — resync it instead of
+                // silently dropping the set with no visible reason.
+                sendCurrentExerciseToWatch()
+                return false
+            }
+            addSetFromWatch(to: entry, weight: request.weight, reps: request.reps)
+            return true
+        }
+    }
+
     private func persistWorkoutChanges(
         failureMessage: String = "Deine Änderungen wurden nicht dauerhaft gespeichert. Bitte versuche es erneut."
     ) -> Bool {
@@ -314,6 +342,9 @@ private struct ActiveEntrySection: View {
     @Bindable var entry: WorkoutEntry
     let previousEntry: WorkoutEntry?
     let onSave: () -> Void
+    /// Notifies the parent when the set structure changes so the current
+    /// exercise state can be re-pushed to the watch.
+    let onSetsChanged: () -> Void
 
     var body: some View {
         Section {
@@ -366,6 +397,7 @@ private struct ActiveEntrySection: View {
         )
         modelContext.insert(newSet)
         entry.sets.append(newSet)
+        onSetsChanged()
     }
 
     private func deleteSets(at offsets: IndexSet) {
@@ -375,6 +407,7 @@ private struct ActiveEntrySection: View {
             entry.sets.removeAll { $0.persistentModelID == set.persistentModelID }
             modelContext.delete(set)
         }
+        onSetsChanged()
     }
 }
 

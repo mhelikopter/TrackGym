@@ -8,6 +8,12 @@ struct LogSetView: View {
     @State private var weight: Double = 0
     @State private var reps: Int = 1
 
+    /// Crown range in the *display* unit: 300 kg and its lbs equivalent,
+    /// so heavy lifts stay loggable regardless of the selected unit.
+    private var maxWeight: Double {
+        connectivity.unit == "lbs" ? 660 : 300
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
@@ -21,7 +27,7 @@ struct LogSetView: View {
                         .digitalCrownRotation(
                             $weight,
                             from: 0,
-                            through: 300,
+                            through: maxWeight,
                             by: 0.5,
                             sensitivity: .medium,
                             isContinuous: false,
@@ -65,11 +71,29 @@ struct LogSetView: View {
             .padding()
         }
         .navigationTitle("Satz loggen")
+        .onAppear {
+            // Prefill from the most recent set so the user only fine-tunes.
+            if weight == 0, let last = connectivity.sets.last {
+                weight = last.weight
+                reps = max(1, last.reps)
+            }
+        }
     }
 
     private func saveSet() {
-        WKInterfaceDevice.current().play(.success)
-        connectivity.sendSet(weight: weight, reps: reps)
+        // Haptic reflects the real outcome instead of unconditional success:
+        // .success = phone accepted, .click = queued for later delivery,
+        // .failure = phone refused (stale exercise / no active workout).
+        connectivity.sendSet(weight: weight, reps: reps) { outcome in
+            switch outcome {
+            case .delivered:
+                WKInterfaceDevice.current().play(.success)
+            case .queued:
+                WKInterfaceDevice.current().play(.click)
+            case .rejected:
+                WKInterfaceDevice.current().play(.failure)
+            }
+        }
         dismiss()
     }
 }

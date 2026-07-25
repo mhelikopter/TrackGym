@@ -16,7 +16,7 @@ struct WorkoutSessionView: View {
                 }
                 .padding(.bottom, 4)
 
-                Text(connectivity.muscleGroup)
+                Text(muscleDisplayName)
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
@@ -50,15 +50,19 @@ struct WorkoutSessionView: View {
                 .buttonStyle(.borderedProminent)
                 .tint(.blue)
 
-                if !connectivity.isReachable {
-                    Button(role: .destructive) {
-                        connectivity.clearLocalState()
-                    } label: {
-                        Label("Workout beenden", systemImage: "xmark.circle.fill")
-                            .font(.subheadline)
-                    }
-                    .buttonStyle(.bordered)
+                // Always available: WCSession.isReachable stays true whenever
+                // the iPhone is in Bluetooth range even if the phone app was
+                // killed mid-workout, so gating this on reachability would
+                // hide it in exactly the stuck-state scenario it exists for.
+                // It only clears local watch state; the phone re-pushes its
+                // context on the next real workout.
+                Button(role: .destructive) {
+                    connectivity.clearLocalState()
+                } label: {
+                    Label("Workout beenden", systemImage: "xmark.circle.fill")
+                        .font(.subheadline)
                 }
+                .buttonStyle(.bordered)
             }
             .padding(.horizontal)
         }
@@ -80,6 +84,21 @@ struct WorkoutSessionView: View {
         case "legs":      return "figure.walk"
         case "core":      return "figure.core.training"
         default:          return "figure.strengthtraining.traditional"
+        }
+    }
+
+    /// The phone sends the raw identifier ("chest"); map it to the German
+    /// label locally so the user never sees the internal value.
+    private var muscleDisplayName: String {
+        switch connectivity.muscleGroup {
+        case "chest":     return "Brust"
+        case "back":      return "Rücken"
+        case "shoulders": return "Schultern"
+        case "arms":      return "Arme"
+        case "legs":      return "Beine"
+        case "core":      return "Core"
+        case "unknown", "": return "Unbekannt"
+        default:          return connectivity.muscleGroup
         }
     }
 }

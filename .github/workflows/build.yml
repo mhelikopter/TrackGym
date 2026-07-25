@@ -37,7 +37,7 @@ jobs:
       - name: Test (iOS Simulator)
         run: |
           set -o pipefail
-          DEST=$(xcrun simctl list devices available | grep -E "iPhone (16 Pro|16|15 Pro|15)" | head -1 | sed -E 's/.*\((.*)\) \(Shutdown.*/\1/')
+          DEST=$(xcrun simctl list devices available | grep -E "iPhone" | sed -nE 's/.*\(([0-9A-F-]{36})\) \((Shutdown|Booted)\).*/\1/p' | head -1)
           if [ -z "$DEST" ]; then
             echo "::error::No suitable iPhone simulator found"
             exit 1
@@ -52,7 +52,7 @@ jobs:
             -only-testing:TrackGymUITests/TrackGymUITests/test_appLaunchesAndShowsRootView
 
   watchos:
-    name: watchOS Build
+    name: watchOS Build & Test
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
@@ -66,3 +66,19 @@ jobs:
             -destination 'generic/platform=watchOS Simulator' \
             -configuration Debug \
             build
+
+      - name: Test (watchOS Simulator)
+        run: |
+          set -o pipefail
+          DEST=$(xcrun simctl list devices available | grep -E "Apple Watch" | sed -nE 's/.*\(([0-9A-F-]{36})\) \((Shutdown|Booted)\).*/\1/p' | head -1)
+          if [ -z "$DEST" ]; then
+            echo "::error::No suitable Apple Watch simulator found"
+            exit 1
+          fi
+          echo "Using simulator $DEST"
+          xcodebuild test \
+            -project TrackGym.xcodeproj \
+            -scheme 'TrackGym Watch App Watch App' \
+            -destination "id=$DEST" \
+            -configuration Debug \
+            -only-testing:'TrackGym Watch App Watch AppTests'

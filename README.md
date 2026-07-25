@@ -66,7 +66,7 @@ xcodebuild test \
 
 - **SwiftUI** for both apps.
 - **SwiftData** for persistence on iPhone (`Exercise`, `Workout`, `WorkoutEntry`, `WorkoutSet`, `WorkoutPlan`).
-- **WatchConnectivity** for phone ↔ watch messaging. Active exercise state is pushed to the watch when a workout starts or advances; sets logged on the watch are forwarded back via `sendMessage`. The watch holds no persistent state of its own.
+- **WatchConnectivity** for phone ↔ watch messaging. Active exercise state is pushed via `updateApplicationContext` (replayed on watch launch) plus a low-latency `sendMessage`; sets logged on the watch go through an acknowledged `sendMessage` with a queued `transferUserInfo` fallback, deduplicated by message id on the phone. The watch holds no persistent workout state of its own.
 - **Charts** framework for the progress views.
 
 ```

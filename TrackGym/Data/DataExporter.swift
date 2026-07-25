@@ -16,6 +16,7 @@ struct ExportExercise: Codable {
     var equipmentType: String
     var isCustom: Bool
     var imageURL: String?
+    var notes: String?
 }
 
 struct ExportWorkoutPlan: Codable {
@@ -95,7 +96,8 @@ enum DataExporter {
                 muscleGroup: exercise.muscleGroupRaw,
                 equipmentType: exercise.equipmentTypeRaw,
                 isCustom: exercise.isCustom,
-                imageURL: exercise.imageURL
+                imageURL: exercise.imageURL,
+                notes: exercise.notes
             )
         }
 
@@ -211,6 +213,10 @@ enum DataExporter {
                 exercise.muscleGroupRaw = ex.muscleGroup
                 exercise.equipmentTypeRaw = ex.equipmentType
                 exercise.imageURL = nil
+                exercise.notes = ex.notes.flatMap {
+                    let trimmed = $0.trimmingCharacters(in: .whitespacesAndNewlines)
+                    return trimmed.isEmpty ? nil : trimmed
+                }
                 context.insert(exercise)
                 if let normalizedID = ex.id.flatMap(Self.normalizedUUIDString) {
                     exerciseMapByID[normalizedID] = exercise

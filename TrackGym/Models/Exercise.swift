@@ -9,6 +9,9 @@ final class Exercise {
     var equipmentTypeRaw: String
     var isCustom: Bool
     var imageURL: String?
+    /// Freitext des Nutzers (Geräte-Einstellung, Grifftechnik). Leerstring
+    /// wird an den Schreibstellen zu nil normalisiert.
+    var notes: String?
 
     @Relationship(deleteRule: .nullify, inverse: \WorkoutEntry.exercise)
     var workoutEntries: [WorkoutEntry] = []

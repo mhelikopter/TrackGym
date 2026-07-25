@@ -348,6 +348,10 @@ private struct ActiveEntrySection: View {
 
     var body: some View {
         Section {
+            if let exercise = entry.exercise {
+                ExerciseNoteRow(exercise: exercise)
+            }
+
             if let prev = previousEntry {
                 ActivePreviousReference(entry: prev)
             }
@@ -454,6 +458,33 @@ private struct ActiveSetRow: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+        }
+    }
+}
+
+// MARK: - Exercise Note
+
+private struct ExerciseNoteRow: View {
+    @Bindable var exercise: Exercise
+
+    private var noteBinding: Binding<String> {
+        Binding(
+            get: { exercise.notes ?? "" },
+            set: {
+                let trimmed = $0.trimmingCharacters(in: .whitespacesAndNewlines)
+                exercise.notes = trimmed.isEmpty ? nil : $0
+            }
+        )
+    }
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "note.text")
+                .foregroundStyle(.secondary)
+                .font(.caption)
+            TextField("Notiz", text: noteBinding, axis: .vertical)
+                .font(.caption)
+                .lineLimit(1...3)
         }
     }
 }

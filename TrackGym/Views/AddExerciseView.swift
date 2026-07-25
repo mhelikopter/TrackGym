@@ -7,6 +7,7 @@ struct AddExerciseView: View {
     @Query(sort: \Exercise.name) private var exercises: [Exercise]
 
     @State private var name = ""
+    @State private var notes = ""
     @State private var selectedMuscleGroup: MuscleGroup = .chest
     @State private var selectedEquipmentType: EquipmentType = .freeWeight
     @State private var duplicateNameAlert = false
@@ -42,6 +43,9 @@ struct AddExerciseView: View {
                             Text(type.displayName).tag(type)
                         }
                     }
+
+                    TextField("Notiz (optional)", text: $notes, axis: .vertical)
+                        .lineLimit(1...3)
                 }
             }
             .navigationTitle("Neue Übung")
@@ -83,6 +87,8 @@ struct AddExerciseView: View {
             equipmentType: selectedEquipmentType,
             isCustom: true
         )
+        let trimmedNotes = notes.trimmingCharacters(in: .whitespacesAndNewlines)
+        exercise.notes = trimmedNotes.isEmpty ? nil : trimmedNotes
         modelContext.insert(exercise)
         dismiss()
     }

@@ -546,6 +546,39 @@ final class TrackGymTests: XCTestCase {
         XCTAssertEqual(entry.exercise?.stableID, exerciseID)
     }
 
+    // MARK: - Übungs-Notizen
+
+    func test_export_then_import_preservesExerciseNotes() throws {
+        let exercise = Exercise(name: "Bench", muscleGroup: .chest, equipmentType: .freeWeight, isCustom: true)
+        exercise.notes = "Sitz auf Position 4, enger Griff"
+        context.insert(exercise)
+        try context.save()
+
+        let exported = try DataExporter.exportData(context: context)
+        try DataExporter.importData(from: exported, context: context)
+
+        let exercises = try context.fetch(FetchDescriptor<Exercise>())
+        XCTAssertEqual(exercises.first?.notes, "Sitz auf Position 4, enger Griff")
+    }
+
+    func test_import_normalizesEmptyNotesToNil() throws {
+        let payload = ExportData(
+            exercises: [
+                ExportExercise(id: nil, name: "Bench", muscleGroup: MuscleGroup.chest.rawValue, equipmentType: EquipmentType.freeWeight.rawValue, isCustom: true, imageURL: nil, notes: "   "),
+            ],
+            workoutPlans: [],
+            workouts: []
+        )
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(payload)
+
+        try DataExporter.importData(from: data, context: context)
+
+        let exercises = try context.fetch(FetchDescriptor<Exercise>())
+        XCTAssertNil(exercises.first?.notes)
+    }
+
     // MARK: - Helpers
 
     private func makeEntry(weights: [(setNumber: Int, weight: Double, reps: Int)]) -> WorkoutEntry {

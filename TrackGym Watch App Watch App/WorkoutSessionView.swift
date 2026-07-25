@@ -2,6 +2,7 @@ import SwiftUI
 
 struct WorkoutSessionView: View {
     @Environment(WatchConnectivityManager.self) private var connectivity
+    @Environment(WorkoutSessionController.self) private var sessionController
     @State private var showingLogSet = false
 
     var body: some View {
@@ -19,6 +20,20 @@ struct WorkoutSessionView: View {
                 Text(muscleDisplayName)
                     .font(.caption)
                     .foregroundStyle(.secondary)
+
+                if sessionController.heartRate != nil || sessionController.activeEnergy != nil {
+                    HStack(spacing: 12) {
+                        if let hr = sessionController.heartRate {
+                            Label("\(Int(hr))", systemImage: "heart.fill")
+                                .foregroundStyle(.red)
+                        }
+                        if let kcal = sessionController.activeEnergy {
+                            Label("\(Int(kcal)) kcal", systemImage: "flame.fill")
+                                .foregroundStyle(.orange)
+                        }
+                    }
+                    .font(.caption)
+                }
 
                 Divider()
 

@@ -76,6 +76,7 @@ struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage("appColorScheme") private var appColorScheme: String = AppColorScheme.system.rawValue
     @AppStorage("weightUnit") private var weightUnit: String = WeightUnit.kg.rawValue
+    @AppStorage("restTimerDuration") private var restTimerDuration: Int = 90
     @State private var showingDeleteAll = false
     @State private var showingDeleteProgress = false
     @State private var showingExporter = false
@@ -131,6 +132,21 @@ struct SettingsView: View {
                         }
                     }
                 }
+            }
+
+            Section {
+                Stepper(value: $restTimerDuration, in: 0...300, step: 15) {
+                    HStack {
+                        Label("Pausen-Timer", systemImage: "timer")
+                        Spacer()
+                        Text(restTimerDuration == 0 ? "Aus" : "\(restTimerDuration) s")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            } header: {
+                Text("Training")
+            } footer: {
+                Text("Startet nach jedem eingetragenen Satz. Die Watch meldet sich per Haptik, wenn die Pause vorbei ist.")
             }
 
             Section {

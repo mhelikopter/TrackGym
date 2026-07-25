@@ -39,6 +39,24 @@ struct WorkoutSessionView: View {
                     }
                 }
 
+                if let restEnd = connectivity.restEndDate {
+                    TimelineView(.periodic(from: .now, by: 1)) { timeline in
+                        let remaining = Int(restEnd.timeIntervalSince(timeline.date).rounded(.up))
+                        if remaining > 0 {
+                            HStack {
+                                Image(systemName: "hourglass")
+                                    .foregroundStyle(.orange)
+                                Text("Pause")
+                                    .font(.caption)
+                                Spacer()
+                                Text(String(format: "%d:%02d", remaining / 60, remaining % 60))
+                                    .font(.headline.monospacedDigit())
+                                    .foregroundStyle(.orange)
+                            }
+                        }
+                    }
+                }
+
                 Divider()
 
                 Button {

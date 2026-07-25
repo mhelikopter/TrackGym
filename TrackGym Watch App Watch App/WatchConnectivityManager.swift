@@ -1,6 +1,7 @@
 import WatchConnectivity
 import Foundation
 import Observation
+import WatchKit
 
 struct WatchSet: Identifiable, Hashable {
     let setNumber: Int
@@ -32,6 +33,12 @@ final class WatchConnectivityManager: NSObject, WCSessionDelegate {
     var sets: [WatchSet] = []
     var workoutActive: Bool = false
     var isReachable: Bool = false
+
+    /// Endzeitpunkt der laufenden Satzpause; nil wenn kein Timer aktiv.
+    var restEndDate: Date?
+
+    @ObservationIgnored
+    private var restHapticTask: Task<Void, Never>?
 
     /// Stamp (`sentAt`) of the state currently applied. Persisted on
     /// clearLocalState so activation replay cannot resurrect a workout the
@@ -109,12 +116,36 @@ final class WatchConnectivityManager: NSObject, WCSessionDelegate {
                 return WatchSet(setNumber: n, weight: w, reps: r)
             }
             self.workoutActive = true
+            if let ends = message["restEndsAt"] as? Double,
+               ends > Date().timeIntervalSince1970 {
+                self.restEndDate = Date(timeIntervalSince1970: ends)
+            } else {
+                self.restEndDate = nil
+            }
+            scheduleRestHaptic()
         case "workoutEnded":
             self.workoutActive = false
             self.exerciseName = ""
             self.sets = []
+            self.restEndDate = nil
+            restHapticTask?.cancel()
         default:
             break
+        }
+    }
+
+    /// Terminiert die Handgelenk-Haptik lokal auf der Watch — kein Timing
+    /// über die Funkverbindung. Jedes neue Payload ersetzt den Termin.
+    @MainActor
+    private func scheduleRestHaptic() {
+        restHapticTask?.cancel()
+        guard let end = restEndDate else { return }
+        let interval = end.timeIntervalSinceNow
+        guard interval > 0 else { return }
+        restHapticTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
+            guard !Task.isCancelled, self.workoutActive else { return }
+            WKInterfaceDevice.current().play(.notification)
         }
     }
 
@@ -131,6 +162,8 @@ final class WatchConnectivityManager: NSObject, WCSessionDelegate {
         muscleGroup = ""
         unit = "kg"
         sets = []
+        restEndDate = nil
+        restHapticTask?.cancel()
     }
 
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {

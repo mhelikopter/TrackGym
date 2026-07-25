@@ -41,6 +41,65 @@ final class TrackGym_Watch_App_Watch_AppTests: XCTestCase {
         XCTAssertEqual(manager.sets.first?.reps, 10)
     }
 
+    // MARK: - Pausen-Timer
+
+    @MainActor
+    func testApplyState_parsesFutureRestEndsAt() {
+        let manager = WatchConnectivityManager()
+        let end = Date().addingTimeInterval(90).timeIntervalSince1970
+
+        manager.applyStateSynchronously([
+            "type": "activeExercise", "exerciseName": "Bench", "muscleGroup": "chest",
+            "unit": "kg", "sets": [] as [[String: Any]], "restEndsAt": end
+        ])
+
+        XCTAssertEqual(manager.restEndDate?.timeIntervalSince1970 ?? 0, end, accuracy: 0.001)
+    }
+
+    @MainActor
+    func testApplyState_ignoresExpiredRestEndsAt() {
+        let manager = WatchConnectivityManager()
+        let past = Date().addingTimeInterval(-10).timeIntervalSince1970
+
+        manager.applyStateSynchronously([
+            "type": "activeExercise", "exerciseName": "Bench", "muscleGroup": "chest",
+            "unit": "kg", "sets": [] as [[String: Any]], "restEndsAt": past
+        ])
+
+        XCTAssertNil(manager.restEndDate)
+    }
+
+    @MainActor
+    func testApplyState_clearsRestTimer_whenPayloadOmitsIt() {
+        let manager = WatchConnectivityManager()
+        let end = Date().addingTimeInterval(90).timeIntervalSince1970
+        manager.applyStateSynchronously([
+            "type": "activeExercise", "exerciseName": "Bench", "muscleGroup": "chest",
+            "unit": "kg", "sets": [] as [[String: Any]], "restEndsAt": end
+        ])
+
+        manager.applyStateSynchronously([
+            "type": "activeExercise", "exerciseName": "Bench", "muscleGroup": "chest",
+            "unit": "kg", "sets": [] as [[String: Any]]
+        ])
+
+        XCTAssertNil(manager.restEndDate)
+    }
+
+    @MainActor
+    func testApplyState_workoutEnded_clearsRestTimer() {
+        let manager = WatchConnectivityManager()
+        let end = Date().addingTimeInterval(90).timeIntervalSince1970
+        manager.applyStateSynchronously([
+            "type": "activeExercise", "exerciseName": "Bench", "muscleGroup": "chest",
+            "unit": "kg", "sets": [] as [[String: Any]], "restEndsAt": end
+        ])
+
+        manager.applyStateSynchronously(["type": "workoutEnded"])
+
+        XCTAssertNil(manager.restEndDate)
+    }
+
     // MARK: - applyStateSynchronously("workoutEnded")
 
     /// Verifies that a "workoutEnded" payload clears workoutActive, exerciseName,

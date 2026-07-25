@@ -37,17 +37,21 @@ final class PhoneConnectivityManager: NSObject, WCSessionDelegate {
         WCSession.default.activate()
     }
 
-    func sendActiveExercise(name: String, muscleGroup: String, unit: String, sets: [WatchSetPayload]) {
+    func sendActiveExercise(name: String, muscleGroup: String, unit: String, sets: [WatchSetPayload], restEndsAt: Double? = nil) {
         let setsDicts: [[String: Any]] = sets.map {
             ["setNumber": $0.setNumber, "weight": $0.weight, "reps": $0.reps]
         }
-        pushState([
+        var payload: [String: Any] = [
             "type": "activeExercise",
             "exerciseName": name,
             "muscleGroup": muscleGroup,
             "unit": unit,
             "sets": setsDicts
-        ])
+        ]
+        if let restEndsAt {
+            payload["restEndsAt"] = restEndsAt
+        }
+        pushState(payload)
     }
 
     func sendWorkoutEnded() {

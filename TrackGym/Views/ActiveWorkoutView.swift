@@ -5,6 +5,7 @@ struct ActiveWorkoutView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @AppStorage("weightUnit") private var weightUnit: String = WeightUnit.kg.rawValue
+    @AppStorage("restTimerDuration") private var restTimerDuration: Int = 90
     let plan: WorkoutPlan
 
     @State private var workoutEntries: [WorkoutEntry] = []
@@ -16,6 +17,7 @@ struct ActiveWorkoutView: View {
     @State private var persistenceErrorMessage = ""
     @State private var showingPersistenceError = false
     @State private var previousEntries: [PersistentIdentifier: WorkoutEntry] = [:]
+    @State private var restEndDate: Date?
 
     @State private var startTime = Date()
 
@@ -31,6 +33,26 @@ struct ActiveWorkoutView: View {
             return String(format: "%d:%02d:%02d", h, m, s)
         }
         return String(format: "%02d:%02d", m, s)
+    }
+
+    private func restTimeString(until end: Date, now: Date) -> String {
+        let remaining = max(0, Int(end.timeIntervalSince(now).rounded(.up)))
+        return String(format: "%d:%02d", remaining / 60, remaining % 60)
+    }
+
+    private func startRestTimer() {
+        guard restTimerDuration > 0 else { return }
+        restEndDate = Date().addingTimeInterval(Double(restTimerDuration))
+    }
+
+    private func skipRestTimer() {
+        restEndDate = nil
+        sendCurrentExerciseToWatch()
+    }
+
+    private func activeRestEndsAt() -> Double? {
+        guard let restEndDate, restEndDate > Date() else { return nil }
+        return restEndDate.timeIntervalSince1970
     }
 
     var body: some View {
@@ -59,6 +81,26 @@ struct ActiveWorkoutView: View {
                                         .foregroundStyle(.blue)
                                 }
                             }
+                            if let restEnd = restEndDate {
+                                TimelineView(.periodic(from: .now, by: 1)) { context in
+                                    if restEnd > context.date {
+                                        HStack {
+                                            Label("Pause", systemImage: "hourglass")
+                                            Spacer()
+                                            Text(restTimeString(until: restEnd, now: context.date))
+                                                .font(.headline.monospacedDigit())
+                                                .foregroundStyle(.orange)
+                                            Button {
+                                                skipRestTimer()
+                                            } label: {
+                                                Image(systemName: "xmark.circle.fill")
+                                                    .foregroundStyle(.secondary)
+                                            }
+                                            .buttonStyle(.plain)
+                                        }
+                                    }
+                                }
+                            }
                             DatePicker("Datum", selection: $workoutDate, displayedComponents: .date)
                         }
 
@@ -68,7 +110,11 @@ struct ActiveWorkoutView: View {
                                 entry: entry,
                                 previousEntry: cachedPreviousEntry(for: entry.exercise),
                                 onSave: { saveEntry(entry) },
-                                onSetsChanged: { sendCurrentExerciseToWatch() }
+                                onSetsChanged: { sendCurrentExerciseToWatch() },
+                                onSetLogged: {
+                                    startRestTimer()
+                                    sendCurrentExerciseToWatch()
+                                }
                             )
                         }
 
@@ -289,13 +335,15 @@ struct ActiveWorkoutView: View {
             name: exercise.name,
             muscleGroup: exercise.muscleGroup.rawValue,
             unit: selectedUnit.rawValue,
-            sets: payload
+            sets: payload,
+            restEndsAt: activeRestEndsAt()
         )
     }
 
     private func addSetFromWatch(to entry: WorkoutEntry, weight: Double, reps: Int) {
         let selectedUnit = WeightUnit.resolved(from: weightUnit)
         WorkoutHistory.appendSet(weight: selectedUnit.kilograms(from: weight), reps: reps, to: entry, in: modelContext)
+        startRestTimer()
         sendCurrentExerciseToWatch()
     }
 
@@ -345,6 +393,8 @@ private struct ActiveEntrySection: View {
     /// Notifies the parent when the set structure changes so the current
     /// exercise state can be re-pushed to the watch.
     let onSetsChanged: () -> Void
+    /// Feuert, wenn ein neuer Satz angelegt wurde (startet die Pause).
+    let onSetLogged: () -> Void
 
     var body: some View {
         Section {
@@ -401,7 +451,7 @@ private struct ActiveEntrySection: View {
         )
         modelContext.insert(newSet)
         entry.sets.append(newSet)
-        onSetsChanged()
+        onSetLogged()
     }
 
     private func deleteSets(at offsets: IndexSet) {

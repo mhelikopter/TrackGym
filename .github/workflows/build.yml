@@ -14,7 +14,7 @@ jobs:
     name: iOS Build & Test
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Show toolchain
         run: |
@@ -58,7 +58,7 @@ jobs:
     name: watchOS Build & Test
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Build (watchOS Simulator)
         run: |

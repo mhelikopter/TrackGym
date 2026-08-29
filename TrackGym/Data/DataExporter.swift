@@ -298,7 +298,7 @@ enum DataExporter {
     /// Canonical (uppercase) UUID string, or nil for unparseable input.
     /// Used for duplicate detection and map keys so case variants of the
     /// same UUID cannot slip past the checks.
-    private static func normalizedUUIDString(_ raw: String) -> String? {
+    private nonisolated static func normalizedUUIDString(_ raw: String) -> String? {
         UUID(uuidString: raw)?.uuidString
     }
 }

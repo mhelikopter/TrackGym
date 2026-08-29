@@ -43,6 +43,9 @@ jobs:
             exit 1
           fi
           echo "Using simulator $DEST"
+          # Boot and wait so the test host does not race a booting simulator.
+          xcrun simctl boot "$DEST" || true
+          xcrun simctl bootstatus "$DEST" -b
           xcodebuild test \
             -project TrackGym.xcodeproj \
             -scheme TrackGym \
@@ -76,9 +79,25 @@ jobs:
             exit 1
           fi
           echo "Using simulator $DEST"
-          xcodebuild test \
-            -project TrackGym.xcodeproj \
-            -scheme 'TrackGym Watch App Watch App' \
-            -destination "id=$DEST" \
-            -configuration Debug \
-            -only-testing:'TrackGym Watch App Watch AppTests'
+          # Boot and wait: launching the test host on a still-booting watch
+          # simulator races with the runner and fails with
+          # "Busy (Application has termination assertions)".
+          xcrun simctl boot "$DEST" || true
+          xcrun simctl bootstatus "$DEST" -b
+          run_tests() {
+            xcodebuild test \
+              -project TrackGym.xcodeproj \
+              -scheme 'TrackGym Watch App Watch App' \
+              -destination "id=$DEST" \
+              -configuration Debug \
+              -only-testing:'TrackGym Watch App Watch AppTests'
+          }
+          # One retry: the remaining failure mode is a simulator launch race,
+          # not a test failure, and it does not reproduce on a warm device.
+          run_tests || {
+            echo "::warning::watchOS test run failed, retrying once"
+            xcrun simctl shutdown "$DEST" || true
+            xcrun simctl boot "$DEST"
+            xcrun simctl bootstatus "$DEST" -b
+            run_tests
+          }

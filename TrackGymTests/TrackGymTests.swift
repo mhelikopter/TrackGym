@@ -450,6 +450,55 @@ final class TrackGymTests: XCTestCase {
         XCTAssertEqual(workouts.first?.plan?.name, "Push")
     }
 
+    // MARK: - WorkoutPlan exercise order
+
+    func test_orderedExercises_followsTheOrderSetOnThePlan() throws {
+        let squat = Exercise(name: "Squat", muscleGroup: .legs, equipmentType: .freeWeight)
+        let bench = Exercise(name: "Bench", muscleGroup: .chest, equipmentType: .freeWeight)
+        let row = Exercise(name: "Row", muscleGroup: .back, equipmentType: .cable)
+        [squat, bench, row].forEach { context.insert($0) }
+        let plan = WorkoutPlan(name: "Full Body")
+        context.insert(plan)
+        plan.setExercises([squat, row, bench])
+        try context.save()
+
+        // The relationship itself is unordered; only orderedExercises is stable.
+        XCTAssertEqual(plan.orderedExercises.map(\.name), ["Squat", "Row", "Bench"])
+    }
+
+    func test_orderedExercises_appendsUnlistedExercisesAlphabetically() throws {
+        // Plans written before exerciseOrderIDs existed have an empty order
+        // list; they must still come out deterministic.
+        let squat = Exercise(name: "Squat", muscleGroup: .legs, equipmentType: .freeWeight)
+        let bench = Exercise(name: "Bench", muscleGroup: .chest, equipmentType: .freeWeight)
+        let row = Exercise(name: "Row", muscleGroup: .back, equipmentType: .cable)
+        [squat, bench, row].forEach { context.insert($0) }
+        let plan = WorkoutPlan(name: "Legacy")
+        context.insert(plan)
+        plan.exercises = [squat, bench, row]
+        plan.exerciseOrderIDs = [row.ensureStableID()]
+        try context.save()
+
+        XCTAssertEqual(plan.orderedExercises.map(\.name), ["Row", "Bench", "Squat"])
+    }
+
+    func test_export_then_import_preservesPlanExerciseOrder() throws {
+        let squat = Exercise(name: "Squat", muscleGroup: .legs, equipmentType: .freeWeight)
+        let bench = Exercise(name: "Bench", muscleGroup: .chest, equipmentType: .freeWeight)
+        let row = Exercise(name: "Row", muscleGroup: .back, equipmentType: .cable)
+        [squat, bench, row].forEach { context.insert($0) }
+        let plan = WorkoutPlan(name: "Full Body")
+        context.insert(plan)
+        plan.setExercises([row, squat, bench])
+        try context.save()
+
+        let exported = try DataExporter.exportData(context: context)
+        try DataExporter.importData(from: exported, context: context)
+
+        let restored = try XCTUnwrap(try context.fetch(FetchDescriptor<WorkoutPlan>()).first)
+        XCTAssertEqual(restored.orderedExercises.map(\.name), ["Row", "Squat", "Bench"])
+    }
+
     func test_deletePlan_nullifiesWorkoutPlanReference() throws {
         let plan = WorkoutPlan(name: "Pull")
         context.insert(plan)

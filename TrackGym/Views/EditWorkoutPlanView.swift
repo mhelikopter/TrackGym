@@ -14,7 +14,7 @@ struct EditWorkoutPlanView: View {
     init(plan: WorkoutPlan? = nil) {
         self.existingPlan = plan
         _planName = State(initialValue: plan?.name ?? "")
-        _selectedExercises = State(initialValue: plan?.exercises ?? [])
+        _selectedExercises = State(initialValue: plan?.orderedExercises ?? [])
     }
 
     private var isValid: Bool {
@@ -48,7 +48,11 @@ struct EditWorkoutPlanView: View {
                                     Image(systemName: "minus.circle.fill")
                                         .foregroundStyle(.red)
                                 }
+                                .accessibilityLabel("\(exercise.name) entfernen")
                             }
+                        }
+                        .onMove { offsets, destination in
+                            selectedExercises.move(fromOffsets: offsets, toOffset: destination)
                         }
                     }
 
@@ -59,6 +63,10 @@ struct EditWorkoutPlanView: View {
                     }
                 } header: {
                     Text("Übungen (\(selectedExercises.count))")
+                } footer: {
+                    if selectedExercises.count > 1 {
+                        Text("Halten und ziehen, um die Reihenfolge zu ändern. So werden die Übungen im Training angezeigt.")
+                    }
                 }
             }
             .navigationTitle(existingPlan == nil ? "Neuer Plan" : "Plan bearbeiten")
@@ -96,11 +104,11 @@ struct EditWorkoutPlanView: View {
         let trimmedName = planName.trimmingCharacters(in: .whitespaces)
         if let plan = existingPlan {
             plan.name = trimmedName
-            plan.exercises = selectedExercises
+            plan.setExercises(selectedExercises)
         } else {
             let plan = WorkoutPlan(name: trimmedName)
-            plan.exercises = selectedExercises
             modelContext.insert(plan)
+            plan.setExercises(selectedExercises)
         }
         dismiss()
     }

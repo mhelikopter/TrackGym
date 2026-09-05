@@ -108,8 +108,8 @@ enum DataExporter {
             return ExportWorkoutPlan(
                 id: exportID,
                 name: plan.name,
-                exerciseIDs: plan.exercises.map { $0.ensureStableID().uuidString },
-                exerciseNames: plan.exercises.map(\.name)
+                exerciseIDs: plan.orderedExercises.map { $0.ensureStableID().uuidString },
+                exerciseNames: plan.orderedExercises.map(\.name)
             )
         }
 
@@ -228,16 +228,17 @@ enum DataExporter {
             var planMapByName: [String: WorkoutPlan] = [:]
             for planData in importData.workoutPlans {
                 let plan = WorkoutPlan(name: planData.name)
-                if let exerciseIDs = planData.exerciseIDs {
-                    plan.exercises = exerciseIDs.compactMap {
-                        Self.normalizedUUIDString($0).flatMap { exerciseMapByID[$0] }
-                    }
-                } else {
-                    plan.exercises = planData.exerciseNames.compactMap {
-                        exerciseMapByName[Exercise.normalizedName($0)]
-                    }
-                }
                 context.insert(plan)
+                // File order is the user's order; setExercises records it.
+                if let exerciseIDs = planData.exerciseIDs {
+                    plan.setExercises(exerciseIDs.compactMap {
+                        Self.normalizedUUIDString($0).flatMap { exerciseMapByID[$0] }
+                    })
+                } else {
+                    plan.setExercises(planData.exerciseNames.compactMap {
+                        exerciseMapByName[Exercise.normalizedName($0)]
+                    })
+                }
                 if let id = planData.id {
                     planMapByExportID[id] = plan
                 }

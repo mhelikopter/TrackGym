@@ -82,7 +82,7 @@ struct WorkoutView: View {
                                         .font(.headline)
                                         .foregroundStyle(.primary)
                                     if !plan.exercises.isEmpty {
-                                        Text(plan.exercises.map(\.name).sorted().joined(separator: ", "))
+                                        Text(plan.orderedExercises.map(\.name).joined(separator: ", "))
                                             .font(.caption)
                                             .foregroundStyle(.secondary)
                                             .lineLimit(1)
@@ -110,6 +110,7 @@ struct WorkoutView: View {
                                         .foregroundStyle(.blue)
                                 }
                                 .buttonStyle(.plain)
+                                .accessibilityLabel("\(plan.name) starten")
                             }
                             .padding(.vertical, 4)
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {

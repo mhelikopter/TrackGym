@@ -10,7 +10,7 @@ struct WorkoutDetailView: View {
     @State private var showingHistory = false
 
     var sortedExercises: [Exercise] {
-        plan.exercises.sorted { $0.name < $1.name }
+        plan.orderedExercises
     }
 
     var planWorkouts: [Workout] {

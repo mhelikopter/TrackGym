@@ -11,6 +11,9 @@ import SwiftUI
 struct TrackGym_Watch_App_Watch_AppApp: App {
     init() {
         WatchConnectivityManager.shared.activate()
+        WorkoutSessionController.shared.recoverIfNeeded {
+            WatchConnectivityManager.shared.workoutActive
+        }
     }
 
     var body: some Scene {

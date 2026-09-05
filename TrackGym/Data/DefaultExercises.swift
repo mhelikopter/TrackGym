@@ -124,10 +124,14 @@ struct DefaultExercises {
             assertionFailure("Failed to fetch existing Exercises, aborting seed to avoid duplicates: \(error)")
             return
         }
-        let existingNames = Set(existingExercises.map(\.name))
+        // Same notion of "same name" as AddExerciseView and the importer
+        // (case/diacritic-insensitive): a user-created "hip thrust" must not
+        // get a second "Hip Thrust" from a later seed version, which the
+        // importer would then reject as a duplicate.
+        let existingNames = Set(existingExercises.map { Exercise.normalizedName($0.name) })
 
         for entry in exercises {
-            guard !existingNames.contains(entry.name) else { continue }
+            guard !existingNames.contains(Exercise.normalizedName(entry.name)) else { continue }
             let exercise = Exercise(
                 name: entry.name,
                 muscleGroup: entry.muscleGroup,

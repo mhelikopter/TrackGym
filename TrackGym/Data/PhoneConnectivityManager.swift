@@ -1,35 +1,39 @@
 import WatchConnectivity
 import Foundation
 
-struct WatchSetPayload: Hashable {
+nonisolated struct WatchSetPayload: Hashable {
     let setNumber: Int
     let weight: Double
     let reps: Int
 }
 
 /// A set logged on the watch, validated and ready for the active workout.
-struct WatchAddSetRequest {
+nonisolated struct WatchAddSetRequest: Sendable {
     let weight: Double
     let reps: Int
     let exerciseName: String?
     /// Watch-side timestamp (timeIntervalSince1970). Used to drop stale sets
     /// that were queued during an earlier workout.
     let sentAt: Double?
+    /// Per-send id the watch attaches so duplicate deliveries can be dropped.
+    let id: String?
 }
 
+@MainActor
 final class PhoneConnectivityManager: NSObject, WCSessionDelegate {
     static let shared = PhoneConnectivityManager()
-    static let maximumAcceptedWeight = 2_000.0
-    static let maximumAcceptedReps = 1_000
+    nonisolated static let maximumAcceptedWeight = 2_000.0
+    nonisolated static let maximumAcceptedReps = 1_000
+    private static let processedSetIDsKey = "processedWatchSetIDs"
 
     /// Registered by ActiveWorkoutView while a workout is running. Returns
     /// true when the set was accepted and appended to the current exercise.
-    @MainActor var addSetHandler: ((WatchAddSetRequest) -> Bool)?
+    var addSetHandler: ((WatchAddSetRequest) -> Bool)?
 
-    /// Ids of recently processed sets. The watch re-sends the identical
-    /// payload via transferUserInfo when sendMessage reports an error even
-    /// though the message may have been delivered — duplicates land here.
-    @MainActor private var recentSetIDs: [String] = []
+    /// Ids of recently processed sets, persisted so a relaunch between the
+    /// original delivery and the watch's transferUserInfo retry still drops
+    /// the duplicate.
+    private var recentSetIDs = RecentIDBuffer.load(from: .standard, key: PhoneConnectivityManager.processedSetIDsKey)
 
     func activate() {
         guard WCSession.isSupported() else { return }
@@ -78,49 +82,65 @@ final class PhoneConnectivityManager: NSObject, WCSessionDelegate {
     }
 
     // MARK: - Incoming sets
+    //
+    // WCSession invokes its delegate on a private background queue, so the
+    // delegate methods are `nonisolated`. They parse the plist dictionary
+    // into a Sendable request right there and hop to the main actor with
+    // that instead of with the dictionary.
 
-    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+        let parsed = Self.parseAddSet(message)
         Task { @MainActor in
-            _ = self.deliverAddSet(message)
+            _ = self.deliver(parsed)
         }
     }
 
-    func session(
+    nonisolated func session(
         _ session: WCSession,
         didReceiveMessage message: [String: Any],
         replyHandler: @escaping ([String: Any]) -> Void
     ) {
+        let parsed = Self.parseAddSet(message)
+        // WCSession's reply block may be invoked from any queue; it is only
+        // not annotated Sendable in the ObjC header.
+        nonisolated(unsafe) let reply = replyHandler
         Task { @MainActor in
-            let accepted = self.deliverAddSet(message)
-            replyHandler(["status": accepted ? "ok" : "rejected"])
+            let accepted = self.deliver(parsed)
+            reply(["status": accepted ? "ok" : "rejected"])
         }
     }
 
-    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
+    nonisolated func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
+        let parsed = Self.parseAddSet(userInfo)
         Task { @MainActor in
-            _ = self.deliverAddSet(userInfo)
+            _ = self.deliver(parsed)
         }
     }
 
-    @MainActor
-    private func deliverAddSet(_ message: [String: Any]) -> Bool {
+    /// Returns nil for anything that is not a well-formed, plausible addSet.
+    nonisolated static func parseAddSet(_ message: [String: Any]) -> WatchAddSetRequest? {
         guard let type = message["type"] as? String, type == "addSet",
               let weight = message["weight"] as? Double,
-              let reps = message["reps"] as? Int else { return false }
-        guard Self.isValidAddSetPayload(weight: weight, reps: reps) else {
+              let reps = message["reps"] as? Int else { return nil }
+        guard isValidAddSetPayload(weight: weight, reps: reps) else {
             NSLog("Ignoring invalid watch addSet payload")
-            return false
+            return nil
         }
-        if let id = message["id"] as? String, !markSetIDProcessed(id) {
-            // Duplicate delivery of a set that was already accepted.
-            return true
-        }
-        let request = WatchAddSetRequest(
+        return WatchAddSetRequest(
             weight: weight,
             reps: reps,
             exerciseName: (message["exerciseName"] as? String).flatMap { $0.isEmpty ? nil : $0 },
-            sentAt: message["sentAt"] as? Double
+            sentAt: message["sentAt"] as? Double,
+            id: message["id"] as? String
         )
+    }
+
+    private func deliver(_ request: WatchAddSetRequest?) -> Bool {
+        guard let request else { return false }
+        if let id = request.id, !markSetIDProcessed(id) {
+            // Duplicate delivery of a set that was already accepted.
+            return true
+        }
         guard let handler = addSetHandler else {
             // No workout is running on the phone — clear the watch so it does
             // not keep showing a stale session and swallowing sets.
@@ -131,17 +151,13 @@ final class PhoneConnectivityManager: NSObject, WCSessionDelegate {
     }
 
     /// Returns false when the id was already processed.
-    @MainActor
     private func markSetIDProcessed(_ id: String) -> Bool {
-        if recentSetIDs.contains(id) { return false }
-        recentSetIDs.append(id)
-        if recentSetIDs.count > 64 {
-            recentSetIDs.removeFirst(recentSetIDs.count - 64)
-        }
+        guard recentSetIDs.insert(id) else { return false }
+        recentSetIDs.save(to: .standard, key: Self.processedSetIDsKey)
         return true
     }
 
-    static func isValidAddSetPayload(weight: Double, reps: Int) -> Bool {
+    nonisolated static func isValidAddSetPayload(weight: Double, reps: Int) -> Bool {
         weight.isFinite &&
         weight >= 0 &&
         weight <= maximumAcceptedWeight &&
@@ -149,7 +165,7 @@ final class PhoneConnectivityManager: NSObject, WCSessionDelegate {
         reps <= maximumAcceptedReps
     }
 
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {}
-    func sessionDidBecomeInactive(_ session: WCSession) {}
-    func sessionDidDeactivate(_ session: WCSession) { WCSession.default.activate() }
+    nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {}
+    nonisolated func sessionDidBecomeInactive(_ session: WCSession) {}
+    nonisolated func sessionDidDeactivate(_ session: WCSession) { WCSession.default.activate() }
 }

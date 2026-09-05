@@ -21,7 +21,9 @@ struct ContentView: View {
                 .foregroundStyle(.secondary)
             }
         }
-        .onChange(of: connectivity.workoutActive) { _, isActive in
+        // initial: a cold start straight into a running workout (context
+        // replay) must start the HealthKit session too, not only a change.
+        .onChange(of: connectivity.workoutActive, initial: true) { _, isActive in
             if isActive {
                 sessionController.startIfNeeded()
             } else {

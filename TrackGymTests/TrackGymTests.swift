@@ -8,7 +8,7 @@ final class TrackGymTests: XCTestCase {
 
     private var context: ModelContext { container.mainContext }
 
-    override func setUpWithError() throws {
+    override func setUp() async throws {
         let schema = Schema([
             Exercise.self,
             Workout.self,
@@ -21,7 +21,7 @@ final class TrackGymTests: XCTestCase {
         container = try ModelContainer(for: schema, configurations: [config])
     }
 
-    override func tearDownWithError() throws {
+    override func tearDown() async throws {
         container = nil
     }
 
@@ -81,6 +81,24 @@ final class TrackGymTests: XCTestCase {
         let secondCount = try context.fetch(FetchDescriptor<Exercise>()).count
 
         XCTAssertEqual(firstCount, secondCount)
+    }
+
+    func test_seed_doesNotDuplicateCustomExerciseThatDiffersOnlyInCase() throws {
+        // AddExerciseView and the importer treat names case-insensitively;
+        // the seed must agree, or a later seed version produces a pair the
+        // importer then rejects as duplicates.
+        let defaultName = try XCTUnwrap(DefaultExercises.exercises.first?.name)
+        let custom = Exercise(name: defaultName.lowercased(), muscleGroup: .chest, equipmentType: .machine, isCustom: true)
+        context.insert(custom)
+        try context.save()
+
+        DefaultExercises.seedDefaultExercises(context: context)
+        try context.save()
+
+        let matching = try context.fetch(FetchDescriptor<Exercise>())
+            .filter { Exercise.normalizedName($0.name) == Exercise.normalizedName(defaultName) }
+        XCTAssertEqual(matching.count, 1)
+        XCTAssertTrue(matching.first?.isCustom == true, "the user's exercise wins over the seed")
     }
 
     func test_resetSeedFlag_allowsReSeedingAfterWipe() throws {

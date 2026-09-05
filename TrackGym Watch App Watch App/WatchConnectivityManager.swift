@@ -27,6 +27,12 @@ final class WatchConnectivityManager: NSObject, WCSessionDelegate {
     static let shared = WatchConnectivityManager()
     private static let clearedContextStampKey = "clearedContextStamp"
 
+    /// Stored application context older than this is not replayed on launch.
+    /// If the phone app died mid-workout it never sent `workoutEnded`, and
+    /// resurrecting that state days later would show a phantom workout and
+    /// start a HealthKit session for it. Longer than any real session.
+    nonisolated static let maxReplayAge: TimeInterval = 4 * 60 * 60
+
     var exerciseName: String = ""
     var muscleGroup: String = ""
     var unit: String = "kg"
@@ -76,20 +82,23 @@ final class WatchConnectivityManager: NSObject, WCSessionDelegate {
         })
     }
 
-    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         applyState(message)
     }
 
-    func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
+    nonisolated func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
         applyState(applicationContext)
     }
 
     /// Entry point for incoming WCSession payloads. WCSessionDelegate callbacks
     /// arrive on a background queue, so this wrapper hops to the main actor and
     /// invokes the synchronous mutation core. Production call sites are unchanged.
-    func applyState(_ message: [String: Any]) {
+    nonisolated func applyState(_ message: [String: Any]) {
+        // WCSession hands over a freshly decoded plist dictionary that nothing
+        // else references, so moving it to the main actor is safe.
+        nonisolated(unsafe) let payload = message
         Task { @MainActor in
-            self.applyStateSynchronously(message)
+            self.applyStateSynchronously(payload)
         }
     }
 
@@ -166,37 +175,46 @@ final class WatchConnectivityManager: NSObject, WCSessionDelegate {
         restHapticTask?.cancel()
     }
 
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+    nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         // didReceiveApplicationContext only fires for content that has not
         // been delivered yet; a context received before the watch app was
         // terminated is never replayed by the system. Restore it manually so
         // a relaunched watch app rejoins the still-running workout.
-        let stored = session.receivedApplicationContext
+        nonisolated(unsafe) let stored = session.receivedApplicationContext
+        let reachable = session.isReachable
         Task { @MainActor in
-            self.isReachable = session.isReachable
-            guard !stored.isEmpty else { return }
-            let stamp = stored["sentAt"] as? Double ?? 0
+            self.isReachable = reachable
             let clearedStamp = UserDefaults.standard.double(forKey: Self.clearedContextStampKey)
-            if stamp != 0 && stamp == clearedStamp {
-                return  // the user dismissed exactly this state via clearLocalState
-            }
+            guard Self.shouldReplay(context: stored, clearedStamp: clearedStamp, now: Date()) else { return }
             self.applyStateSynchronously(stored)
         }
     }
 
-    func sessionReachabilityDidChange(_ session: WCSession) {
+    /// Whether a stored application context should be re-applied on launch.
+    /// Rejects empty contexts, the exact state the user dismissed via
+    /// `clearLocalState`, and anything older than `maxReplayAge`.
+    nonisolated static func shouldReplay(context: [String: Any], clearedStamp: Double, now: Date) -> Bool {
+        guard !context.isEmpty else { return false }
+        let stamp = context["sentAt"] as? Double ?? 0
+        guard stamp != 0 else { return true }
+        if stamp == clearedStamp { return false }
+        return now.timeIntervalSince1970 - stamp <= maxReplayAge
+    }
+
+    nonisolated func sessionReachabilityDidChange(_ session: WCSession) {
+        let reachable = session.isReachable
         Task { @MainActor in
-            self.isReachable = session.isReachable
+            self.isReachable = reachable
         }
     }
 
-    private static func intValue(_ value: Any?) -> Int? {
+    nonisolated private static func intValue(_ value: Any?) -> Int? {
         if let i = value as? Int { return i }
         if let d = value as? Double, d.isFinite { return Int(d) }
         return nil
     }
 
-    private static func doubleValue(_ value: Any?) -> Double? {
+    nonisolated private static func doubleValue(_ value: Any?) -> Double? {
         if let d = value as? Double { return d }
         if let i = value as? Int { return Double(i) }
         return nil

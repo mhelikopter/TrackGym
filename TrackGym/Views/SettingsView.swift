@@ -34,7 +34,9 @@ enum AppColorScheme: String, CaseIterable {
     }
 }
 
-enum WeightUnit: String, CaseIterable {
+/// Pure value type used from @Model code too, so it must not be tied to the
+/// main actor the rest of the module defaults to.
+nonisolated enum WeightUnit: String, CaseIterable {
     case kg = "kg"
     case lbs = "lbs"
 

@@ -153,4 +153,46 @@ final class TrackGym_Watch_App_Watch_AppTests: XCTestCase {
         XCTAssertFalse(manager.workoutActive)
         XCTAssertEqual(manager.exerciseName, "")
     }
+
+    // MARK: - shouldReplay (activation replay of stored applicationContext)
+
+    private func context(sentAt: Double?) -> [String: Any] {
+        var payload: [String: Any] = ["type": "activeExercise", "exerciseName": "Squat"]
+        if let sentAt { payload["sentAt"] = sentAt }
+        return payload
+    }
+
+    func testShouldReplay_isFalse_forEmptyContext() {
+        XCTAssertFalse(WatchConnectivityManager.shouldReplay(context: [:], clearedStamp: 0, now: Date()))
+    }
+
+    func testShouldReplay_isTrue_forFreshContext() {
+        let now = Date()
+        let stamp = now.timeIntervalSince1970 - 60
+        XCTAssertTrue(WatchConnectivityManager.shouldReplay(context: context(sentAt: stamp), clearedStamp: 0, now: now))
+    }
+
+    func testShouldReplay_isFalse_forTheStateTheUserDismissed() {
+        let now = Date()
+        let stamp = now.timeIntervalSince1970 - 60
+        XCTAssertFalse(WatchConnectivityManager.shouldReplay(context: context(sentAt: stamp), clearedStamp: stamp, now: now))
+    }
+
+    func testShouldReplay_isFalse_forContextOlderThanMaxReplayAge() {
+        // Phone app died mid-workout yesterday and never sent workoutEnded.
+        let now = Date()
+        let stamp = now.timeIntervalSince1970 - WatchConnectivityManager.maxReplayAge - 1
+        XCTAssertFalse(WatchConnectivityManager.shouldReplay(context: context(sentAt: stamp), clearedStamp: 0, now: now))
+    }
+
+    func testShouldReplay_isTrue_justInsideMaxReplayAge() {
+        let now = Date()
+        let stamp = now.timeIntervalSince1970 - WatchConnectivityManager.maxReplayAge + 1
+        XCTAssertTrue(WatchConnectivityManager.shouldReplay(context: context(sentAt: stamp), clearedStamp: 0, now: now))
+    }
+
+    func testShouldReplay_isTrue_forContextWithoutStamp() {
+        // Older phone builds sent no sentAt; never lock those out.
+        XCTAssertTrue(WatchConnectivityManager.shouldReplay(context: context(sentAt: nil), clearedStamp: 0, now: Date()))
+    }
 }

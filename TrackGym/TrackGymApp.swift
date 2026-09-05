@@ -25,6 +25,13 @@ struct TrackGymApp: App {
         }
     }()
 
+    init() {
+        // Activate before the first view appears: the watch may wake the
+        // phone app in the background to deliver a queued set, and a session
+        // activated only in onAppear would miss that delivery.
+        PhoneConnectivityManager.shared.activate()
+    }
+
     var body: some Scene {
         WindowGroup {
             rootView
@@ -43,6 +50,19 @@ struct TrackGymApp: App {
                     } catch {
                         Self.log.error("Exercise stable ID backfill failed: \(error.localizedDescription, privacy: .public)")
                     }
+                    #if DEBUG
+                    // Screenshot/demo aid: `-demoDataPath <file>` replaces the
+                    // store with a backup JSON at launch (see docs/screenshots).
+                    if let path = UserDefaults.standard.string(forKey: "demoDataPath") {
+                        do {
+                            let data = try Data(contentsOf: URL(fileURLWithPath: path))
+                            try DataExporter.importData(from: data, context: modelContainer.mainContext)
+                            Self.log.notice("Imported demo data from \(path, privacy: .public)")
+                        } catch {
+                            Self.log.error("Demo data import failed: \(error.localizedDescription, privacy: .public)")
+                        }
+                    }
+                    #endif
                     do {
                         let removed = try WorkoutHistory.deleteOrphanedEntries(in: modelContainer.mainContext)
                         if removed > 0 {
@@ -51,7 +71,6 @@ struct TrackGymApp: App {
                     } catch {
                         Self.log.error("Orphaned entry cleanup failed: \(error.localizedDescription, privacy: .public)")
                     }
-                    PhoneConnectivityManager.shared.activate()
                 }
                 .modelContainer(modelContainer)
         case .failure(let error):

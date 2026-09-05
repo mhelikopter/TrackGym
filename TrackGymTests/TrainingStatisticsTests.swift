@@ -7,12 +7,12 @@ final class TrainingStatisticsTests: XCTestCase {
     private var container: ModelContainer!
     private var context: ModelContext { container.mainContext }
 
-    override func setUpWithError() throws {
+    override func setUp() async throws {
         let schema = Schema([Exercise.self, Workout.self, WorkoutEntry.self, WorkoutSet.self, WorkoutPlan.self, SeedVersion.self])
         container = try ModelContainer(for: schema, configurations: [ModelConfiguration(isStoredInMemoryOnly: true)])
     }
 
-    override func tearDownWithError() throws {
+    override func tearDown() async throws {
         container = nil
     }
 

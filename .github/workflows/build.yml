@@ -12,7 +12,7 @@ concurrency:
 jobs:
   ios:
     name: iOS Build & Test
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v5
 
@@ -56,7 +56,7 @@ jobs:
 
   watchos:
     name: watchOS Build & Test
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v5
 

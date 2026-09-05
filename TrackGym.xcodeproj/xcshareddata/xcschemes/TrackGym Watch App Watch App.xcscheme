@@ -38,16 +38,6 @@
                ReferencedContainer = "container:TrackGym.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E7ADB0512F50D5F3005392E0"
-               BuildableName = "TrackGym Watch App Watch AppUITests.xctest"
-               BlueprintName = "TrackGym Watch App Watch AppUITests"
-               ReferencedContainer = "container:TrackGym.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

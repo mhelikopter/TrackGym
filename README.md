@@ -86,6 +86,10 @@ To reproduce the screenshots, launch a Debug build with a demo backup:
 xcrun simctl launch <iphone-udid> de.ehling.TrackGym -demoDataPath "$PWD/docs/demo-data.json"
 ```
 
+## How it was built
+
+Built with an AI-assisted workflow: features start as a short design spec and an implementation plan (see [`docs/superpowers/`](docs/superpowers/)), then get implemented, tested and reviewed with [Claude Code](https://claude.com/claude-code) in the loop — the `Co-Authored-By` trailers in the git history show where. Product decisions, scope and what ships are mine; the test suite and CI are what keep that honest.
+
 ## Roadmap
 
 - English localization (UI is German-only today)

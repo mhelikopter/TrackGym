@@ -1,0 +1,3196 @@
+{
+  "exercises": [
+    {
+      "equipmentType": "freeWeight",
+      "id": "4F98294C-8D9E-4410-9E62-FEC1ADBC3EC5",
+      "isCustom": false,
+      "muscleGroup": "chest",
+      "name": "Bankdrücken",
+      "notes": "Griff: Ringfinger auf der Markierung, Füße fest."
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "65EDB4C6-E632-47A7-9DED-DD3DD4F67B5A",
+      "isCustom": false,
+      "muscleGroup": "chest",
+      "name": "Bankdrücken Kurzhantel"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "4AA3EF51-B362-4747-B816-0E81729A754A",
+      "isCustom": false,
+      "muscleGroup": "chest",
+      "name": "Schrägbankdrücken"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "8EF0A5BB-7BFA-4F87-B1C8-D107329D702D",
+      "isCustom": false,
+      "muscleGroup": "chest",
+      "name": "Schrägbankdrücken Kurzhantel"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "86586B1F-2DFE-49A5-B375-597C34D24A76",
+      "isCustom": false,
+      "muscleGroup": "chest",
+      "name": "Negativ Bankdrücken"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "1DA15F0D-4DA7-4C5F-9D09-99092B9D1DC1",
+      "isCustom": false,
+      "muscleGroup": "chest",
+      "name": "Fliegende Kurzhantel"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "9B7311E4-784F-4228-B35E-BC39A59A7714",
+      "isCustom": false,
+      "muscleGroup": "chest",
+      "name": "Brustpresse"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "7175A85F-0904-4C52-80A5-75E70F063FE2",
+      "isCustom": false,
+      "muscleGroup": "chest",
+      "name": "Butterfly"
+    },
+    {
+      "equipmentType": "cable",
+      "id": "170DCD45-9852-4969-8889-9A8D28DEFF82",
+      "isCustom": false,
+      "muscleGroup": "chest",
+      "name": "Kabelzug Crossover"
+    },
+    {
+      "equipmentType": "cable",
+      "id": "FFF67E0A-07B3-4FA8-85F8-A52E00991932",
+      "isCustom": false,
+      "muscleGroup": "chest",
+      "name": "Kabelzug Fliegende"
+    },
+    {
+      "equipmentType": "bodyweight",
+      "id": "33308DF9-04D7-47AF-86DC-1AF50A410D4C",
+      "isCustom": false,
+      "muscleGroup": "chest",
+      "name": "Liegestütze"
+    },
+    {
+      "equipmentType": "cable",
+      "id": "7F5FC392-C735-4E1D-865B-D00001149C11",
+      "isCustom": false,
+      "muscleGroup": "back",
+      "name": "Latzug breit",
+      "notes": "Sitz auf Stufe 3."
+    },
+    {
+      "equipmentType": "cable",
+      "id": "2407A4BC-B15E-4E60-8E2C-B005608E6E8C",
+      "isCustom": false,
+      "muscleGroup": "back",
+      "name": "Latzug eng"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "EA9B7077-5392-4BED-B3BF-BA712AB4C008",
+      "isCustom": false,
+      "muscleGroup": "back",
+      "name": "Rudern Langhantel"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "41C10449-EF4C-48E8-9CDF-FDC850283902",
+      "isCustom": false,
+      "muscleGroup": "back",
+      "name": "Rudern Kurzhantel"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "4BD2BDCB-8186-4609-BC46-13EC43EC8CD8",
+      "isCustom": false,
+      "muscleGroup": "back",
+      "name": "T-Bar Rudern"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "A9091A95-B7FC-42F1-A8C4-7FA368A350DF",
+      "isCustom": false,
+      "muscleGroup": "back",
+      "name": "Rudermaschine"
+    },
+    {
+      "equipmentType": "bodyweight",
+      "id": "103C5846-B381-4906-BAD2-8DC63607DDA2",
+      "isCustom": false,
+      "muscleGroup": "back",
+      "name": "Klimmzüge"
+    },
+    {
+      "equipmentType": "bodyweight",
+      "id": "4E4DE65C-997C-42D7-9CC8-F4C060191859",
+      "isCustom": false,
+      "muscleGroup": "back",
+      "name": "Klimmzüge eng"
+    },
+    {
+      "equipmentType": "cable",
+      "id": "0CC4ABF4-8508-4EFE-88AD-6247A5623C89",
+      "isCustom": false,
+      "muscleGroup": "back",
+      "name": "Kabelrudern"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "ADE2F5C0-E11C-4B27-86C2-5C7334F90039",
+      "isCustom": false,
+      "muscleGroup": "back",
+      "name": "Kreuzheben"
+    },
+    {
+      "equipmentType": "bodyweight",
+      "id": "7217DA1B-41A7-42BD-8AE5-2871AF2FF362",
+      "isCustom": false,
+      "muscleGroup": "back",
+      "name": "Hyperextensions"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "F38C282F-0829-49E1-9B47-BEF9028D1BC9",
+      "isCustom": false,
+      "muscleGroup": "back",
+      "name": "Latzug Maschine"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "7F8DDAEF-BF37-431E-9EC1-F6D5EEA03618",
+      "isCustom": false,
+      "muscleGroup": "back",
+      "name": "Rückenstrecker"
+    },
+    {
+      "equipmentType": "cable",
+      "id": "2AA6F05D-E1B1-4A36-AF1A-5C677C3F1239",
+      "isCustom": false,
+      "muscleGroup": "back",
+      "name": "Einarmiges Kabelrudern"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "8BDB4FE6-00EC-4051-A33C-CB445F5108F0",
+      "isCustom": false,
+      "muscleGroup": "shoulders",
+      "name": "Schulterdrücken Langhantel"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "CB8562ED-3777-4DF0-AE54-D38F33156FAA",
+      "isCustom": false,
+      "muscleGroup": "shoulders",
+      "name": "Schulterdrücken Kurzhantel"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "3067BE47-1F8B-43DA-A967-FC7762B14CEE",
+      "isCustom": false,
+      "muscleGroup": "shoulders",
+      "name": "Seitheben Kurzhantel"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "30D363BE-E074-4391-8A44-8B8B6DB24497",
+      "isCustom": false,
+      "muscleGroup": "shoulders",
+      "name": "Frontheben"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "28BD068B-99A6-4E15-8836-5E884949C0DA",
+      "isCustom": false,
+      "muscleGroup": "shoulders",
+      "name": "Schulterpresse Maschine"
+    },
+    {
+      "equipmentType": "cable",
+      "id": "75F027F5-3A50-4602-ABBF-615CE63DBF56",
+      "isCustom": false,
+      "muscleGroup": "shoulders",
+      "name": "Face Pulls"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "7649BA79-D8CC-4419-A2B3-3EF49CDFF872",
+      "isCustom": false,
+      "muscleGroup": "shoulders",
+      "name": "Reverse Butterfly"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "46A71F18-E2C7-4882-BAF9-BD8C3D54FBF2",
+      "isCustom": false,
+      "muscleGroup": "shoulders",
+      "name": "Seithebemaschine"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "B2839E6D-EFF3-4FE6-A0FF-F39E4568F2C0",
+      "isCustom": false,
+      "muscleGroup": "shoulders",
+      "name": "Aufrechtes Rudern"
+    },
+    {
+      "equipmentType": "cable",
+      "id": "4FBA8E18-93F6-4231-8EEC-D7FF3C99EFB1",
+      "isCustom": false,
+      "muscleGroup": "shoulders",
+      "name": "Seitheben Kabelzug"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "06E63CC3-55A7-45B0-895C-BD6F3A30211A",
+      "isCustom": false,
+      "muscleGroup": "shoulders",
+      "name": "Arnold Press"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "C757E351-97CF-4174-AC35-B9D64FCEACAF",
+      "isCustom": false,
+      "muscleGroup": "shoulders",
+      "name": "Shrugs"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "FA9337AD-FF18-4C5D-A17C-6E21819EBE69",
+      "isCustom": false,
+      "muscleGroup": "arms",
+      "name": "Bizeps-Curls Langhantel"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "6539DBE7-F40A-4BD8-B4AD-41E0817E854C",
+      "isCustom": false,
+      "muscleGroup": "arms",
+      "name": "Bizeps-Curls Kurzhantel"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "A3C395D7-0529-4BE0-B1AB-DCF1D5282153",
+      "isCustom": false,
+      "muscleGroup": "arms",
+      "name": "SZ-Curls"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "8F925232-284F-4E88-8354-978997C5AB7C",
+      "isCustom": false,
+      "muscleGroup": "arms",
+      "name": "Hammercurls"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "4C7EDBD6-BF54-4A12-BAC4-0A33CB5AFE7E",
+      "isCustom": false,
+      "muscleGroup": "arms",
+      "name": "Konzentrationscurls"
+    },
+    {
+      "equipmentType": "cable",
+      "id": "C3B475AB-B267-44EB-89A4-785D29CB1969",
+      "isCustom": false,
+      "muscleGroup": "arms",
+      "name": "Cable Curls"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "0415EF06-1D56-4260-B8AC-5A6C342BC19F",
+      "isCustom": false,
+      "muscleGroup": "arms",
+      "name": "Bizepsmaschine"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "57A8A36A-C77B-40E3-8431-F4084775EADA",
+      "isCustom": false,
+      "muscleGroup": "arms",
+      "name": "Bizepsmaschine einzeln"
+    },
+    {
+      "equipmentType": "cable",
+      "id": "16204341-7E0F-464A-96B3-8BE3270C5ADC",
+      "isCustom": false,
+      "muscleGroup": "arms",
+      "name": "Trizepsdrücken Kabel"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "39776A69-21CE-4490-AB0A-9C07FC615E5A",
+      "isCustom": false,
+      "muscleGroup": "arms",
+      "name": "French Press"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "853554D8-7304-4CDA-B800-D4A8363A73F2",
+      "isCustom": false,
+      "muscleGroup": "arms",
+      "name": "Trizeps Kickbacks"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "49612FA7-317A-4F81-B8C2-E0989A31EB4D",
+      "isCustom": false,
+      "muscleGroup": "arms",
+      "name": "Overhead Trizepsdrücken"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "E55D675D-C270-4A53-8FC6-85D2A8A34DA0",
+      "isCustom": false,
+      "muscleGroup": "arms",
+      "name": "Trizepsmaschine"
+    },
+    {
+      "equipmentType": "bodyweight",
+      "id": "59FB79C8-F705-479F-8905-ACC9C40ABD58",
+      "isCustom": false,
+      "muscleGroup": "arms",
+      "name": "Dips"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "4983FB5C-4F91-4F54-8BFF-2A9864CF2093",
+      "isCustom": false,
+      "muscleGroup": "arms",
+      "name": "Unterarm-Curls"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "FE930C14-D750-4A02-8E46-912D23CA6BB2",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Kniebeugen",
+      "notes": "Safety-Pins auf Höhe 14, Gürtel ab 100 kg."
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "E20A2A23-2A6A-499C-9D0E-B9A9AFA620AC",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Frontkniebeugen"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "2F7D5324-5DB2-4A78-814A-F921AE50D95A",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Beinpresse"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "DB15B406-E5D6-48B9-9B6B-CB11C1A0F5A3",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Beinstrecker"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "F6CF6982-EAE1-4B4C-BCD8-48ADD7834BC5",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Beinbeuger liegend"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "07DBA865-B495-4914-9ED6-A81AD7BF2443",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Beinbeuger sitzend"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "3A4C2F21-8A5F-4E2E-837A-4E1606CB90AA",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Wadenheben stehend"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "6F2527DA-D554-4A84-9AD4-A222E709732C",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Wadenheben sitzend"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "F2CE65B4-1454-4B4E-BB17-01158444E8A2",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Ausfallschritte"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "62401AA9-DE40-4EB2-85DF-5989D75194F5",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Bulgarische Kniebeugen"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "1FCE1B3C-0751-4071-8E2C-486969DF3B7E",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Rumänisches Kreuzheben"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "F7FF7788-9D4C-4A2B-A689-B4F0D94A9165",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Hackenschmidt"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "D67710E6-6FF4-4BCA-88C7-D457DE2CCDFC",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Goblet Squat"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "6A92F46F-89FB-4458-9B86-B0DAD55B5A3F",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Hip Thrust"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "00EBF356-AB15-428E-AB24-2015AF9A4C97",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Adduktoren"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "515AD681-C8CC-473B-9D32-309CAA700994",
+      "isCustom": false,
+      "muscleGroup": "legs",
+      "name": "Abduktoren"
+    },
+    {
+      "equipmentType": "bodyweight",
+      "id": "440088BC-8E0A-4110-B895-97B82E308648",
+      "isCustom": false,
+      "muscleGroup": "core",
+      "name": "Crunches"
+    },
+    {
+      "equipmentType": "bodyweight",
+      "id": "7132A4B9-81BF-4EE5-B895-A65066619FFF",
+      "isCustom": false,
+      "muscleGroup": "core",
+      "name": "Plank"
+    },
+    {
+      "equipmentType": "freeWeight",
+      "id": "F0CD4E89-4331-49E2-8C58-96BC05E4DFF0",
+      "isCustom": false,
+      "muscleGroup": "core",
+      "name": "Russian Twist"
+    },
+    {
+      "equipmentType": "bodyweight",
+      "id": "924072F2-3749-4A23-9204-B6A8115E888F",
+      "isCustom": false,
+      "muscleGroup": "core",
+      "name": "Beinheben"
+    },
+    {
+      "equipmentType": "bodyweight",
+      "id": "59CBF5B6-C653-4CC1-B13A-F0E8240B001B",
+      "isCustom": false,
+      "muscleGroup": "core",
+      "name": "Beinheben hängend"
+    },
+    {
+      "equipmentType": "cable",
+      "id": "7BF5C894-A088-4944-AE08-EF21270A11E7",
+      "isCustom": false,
+      "muscleGroup": "core",
+      "name": "Kabelzug Crunches"
+    },
+    {
+      "equipmentType": "bodyweight",
+      "id": "89435C51-D632-4BB3-BF54-DAEEDDAFADC5",
+      "isCustom": false,
+      "muscleGroup": "core",
+      "name": "Seitliche Crunches"
+    },
+    {
+      "equipmentType": "machine",
+      "id": "FECF45ED-E22F-49C6-99AE-6297D09F7598",
+      "isCustom": false,
+      "muscleGroup": "core",
+      "name": "Bauchpresse"
+    },
+    {
+      "equipmentType": "bodyweight",
+      "id": "E9B1F097-24D1-4D8D-982C-471AA1AC9BC5",
+      "isCustom": false,
+      "muscleGroup": "core",
+      "name": "Ab Roller"
+    }
+  ],
+  "workoutPlans": [
+    {
+      "exerciseIDs": [
+        "4F98294C-8D9E-4410-9E62-FEC1ADBC3EC5",
+        "8EF0A5BB-7BFA-4F87-B1C8-D107329D702D",
+        "CB8562ED-3777-4DF0-AE54-D38F33156FAA",
+        "3067BE47-1F8B-43DA-A967-FC7762B14CEE",
+        "16204341-7E0F-464A-96B3-8BE3270C5ADC"
+      ],
+      "exerciseNames": [
+        "Bankdrücken",
+        "Schrägbankdrücken Kurzhantel",
+        "Schulterdrücken Kurzhantel",
+        "Seitheben Kurzhantel",
+        "Trizepsdrücken Kabel"
+      ],
+      "id": "0",
+      "name": "Push"
+    },
+    {
+      "exerciseIDs": [
+        "ADE2F5C0-E11C-4B27-86C2-5C7334F90039",
+        "7F5FC392-C735-4E1D-865B-D00001149C11",
+        "EA9B7077-5392-4BED-B3BF-BA712AB4C008",
+        "75F027F5-3A50-4602-ABBF-615CE63DBF56",
+        "6539DBE7-F40A-4BD8-B4AD-41E0817E854C"
+      ],
+      "exerciseNames": [
+        "Kreuzheben",
+        "Latzug breit",
+        "Rudern Langhantel",
+        "Face Pulls",
+        "Bizeps-Curls Kurzhantel"
+      ],
+      "id": "1",
+      "name": "Pull"
+    },
+    {
+      "exerciseIDs": [
+        "FE930C14-D750-4A02-8E46-912D23CA6BB2",
+        "2F7D5324-5DB2-4A78-814A-F921AE50D95A",
+        "1FCE1B3C-0751-4071-8E2C-486969DF3B7E",
+        "DB15B406-E5D6-48B9-9B6B-CB11C1A0F5A3",
+        "3A4C2F21-8A5F-4E2E-837A-4E1606CB90AA"
+      ],
+      "exerciseNames": [
+        "Kniebeugen",
+        "Beinpresse",
+        "Rumänisches Kreuzheben",
+        "Beinstrecker",
+        "Wadenheben stehend"
+      ],
+      "id": "2",
+      "name": "Legs"
+    }
+  ],
+  "workouts": [
+    {
+      "date": "2026-07-28T16:05:00Z",
+      "duration": 3300,
+      "entries": [
+        {
+          "date": "2026-07-28T16:10:00Z",
+          "exerciseID": "4F98294C-8D9E-4410-9E62-FEC1ADBC3EC5",
+          "exerciseName": "Bankdrücken",
+          "sets": [
+            {
+              "reps": 8,
+              "setNumber": 1,
+              "weight": 70.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 70.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 3,
+              "weight": 70.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 7,
+              "setNumber": 4,
+              "weight": 70.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-07-28T16:19:00Z",
+          "exerciseID": "8EF0A5BB-7BFA-4F87-B1C8-D107329D702D",
+          "exerciseName": "Schrägbankdrücken Kurzhantel",
+          "sets": [
+            {
+              "reps": 10,
+              "setNumber": 1,
+              "weight": 24,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 24,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 3,
+              "weight": 24,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-07-28T16:28:00Z",
+          "exerciseID": "CB8562ED-3777-4DF0-AE54-D38F33156FAA",
+          "exerciseName": "Schulterdrücken Kurzhantel",
+          "sets": [
+            {
+              "reps": 10,
+              "setNumber": 1,
+              "weight": 18,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 18,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 3,
+              "weight": 18,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-07-28T16:37:00Z",
+          "exerciseID": "3067BE47-1F8B-43DA-A967-FC7762B14CEE",
+          "exerciseName": "Seitheben Kurzhantel",
+          "sets": [
+            {
+              "reps": 12,
+              "setNumber": 1,
+              "weight": 10,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 10,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 3,
+              "weight": 10,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-07-28T16:46:00Z",
+          "exerciseID": "16204341-7E0F-464A-96B3-8BE3270C5ADC",
+          "exerciseName": "Trizepsdrücken Kabel",
+          "sets": [
+            {
+              "reps": 12,
+              "setNumber": 1,
+              "weight": 30.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 30.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 11,
+              "setNumber": 3,
+              "weight": 30.0,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Push",
+      "planID": "0",
+      "planName": "Push"
+    },
+    {
+      "date": "2026-07-30T16:05:00Z",
+      "duration": 3780,
+      "entries": [
+        {
+          "date": "2026-07-30T16:10:00Z",
+          "exerciseID": "ADE2F5C0-E11C-4B27-86C2-5C7334F90039",
+          "exerciseName": "Kreuzheben",
+          "sets": [
+            {
+              "reps": 6,
+              "setNumber": 1,
+              "weight": 110,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 2,
+              "weight": 110,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 3,
+              "weight": 110,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 4,
+              "weight": 110,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-07-30T16:19:00Z",
+          "exerciseID": "7F5FC392-C735-4E1D-865B-D00001149C11",
+          "exerciseName": "Latzug breit",
+          "sets": [
+            {
+              "reps": 10,
+              "setNumber": 1,
+              "weight": 60.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 60.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 60.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 4,
+              "weight": 60.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-07-30T16:28:00Z",
+          "exerciseID": "EA9B7077-5392-4BED-B3BF-BA712AB4C008",
+          "exerciseName": "Rudern Langhantel",
+          "sets": [
+            {
+              "reps": 8,
+              "setNumber": 1,
+              "weight": 60.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 60.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 7,
+              "setNumber": 3,
+              "weight": 60.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-07-30T16:37:00Z",
+          "exerciseID": "75F027F5-3A50-4602-ABBF-615CE63DBF56",
+          "exerciseName": "Face Pulls",
+          "sets": [
+            {
+              "reps": 15,
+              "setNumber": 1,
+              "weight": 25.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 2,
+              "weight": 25.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 14,
+              "setNumber": 3,
+              "weight": 25.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-07-30T16:46:00Z",
+          "exerciseID": "6539DBE7-F40A-4BD8-B4AD-41E0817E854C",
+          "exerciseName": "Bizeps-Curls Kurzhantel",
+          "sets": [
+            {
+              "reps": 10,
+              "setNumber": 1,
+              "weight": 14,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 14,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 14,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Pull",
+      "planID": "1",
+      "planName": "Pull"
+    },
+    {
+      "date": "2026-08-01T16:05:00Z",
+      "duration": 3060,
+      "entries": [
+        {
+          "date": "2026-08-01T16:10:00Z",
+          "exerciseID": "FE930C14-D750-4A02-8E46-912D23CA6BB2",
+          "exerciseName": "Kniebeugen",
+          "sets": [
+            {
+              "reps": 6,
+              "setNumber": 1,
+              "weight": 90.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 2,
+              "weight": 90.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 3,
+              "weight": 90.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 4,
+              "weight": 90.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-01T16:19:00Z",
+          "exerciseID": "2F7D5324-5DB2-4A78-814A-F921AE50D95A",
+          "exerciseName": "Beinpresse",
+          "sets": [
+            {
+              "reps": 10,
+              "setNumber": 1,
+              "weight": 160,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 160,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 160,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 4,
+              "weight": 160,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-01T16:28:00Z",
+          "exerciseID": "1FCE1B3C-0751-4071-8E2C-486969DF3B7E",
+          "exerciseName": "Rumänisches Kreuzheben",
+          "sets": [
+            {
+              "reps": 8,
+              "setNumber": 1,
+              "weight": 80.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 80.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 7,
+              "setNumber": 3,
+              "weight": 80.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-01T16:37:00Z",
+          "exerciseID": "DB15B406-E5D6-48B9-9B6B-CB11C1A0F5A3",
+          "exerciseName": "Beinstrecker",
+          "sets": [
+            {
+              "reps": 12,
+              "setNumber": 1,
+              "weight": 45.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 45.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 3,
+              "weight": 45.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-01T16:46:00Z",
+          "exerciseID": "3A4C2F21-8A5F-4E2E-837A-4E1606CB90AA",
+          "exerciseName": "Wadenheben stehend",
+          "sets": [
+            {
+              "reps": 15,
+              "setNumber": 1,
+              "weight": 60,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 2,
+              "weight": 60,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 14,
+              "setNumber": 3,
+              "weight": 60,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Legs",
+      "planID": "2",
+      "planName": "Legs"
+    },
+    {
+      "date": "2026-08-04T16:05:00Z",
+      "duration": 3360,
+      "entries": [
+        {
+          "date": "2026-08-04T16:10:00Z",
+          "exerciseID": "4F98294C-8D9E-4410-9E62-FEC1ADBC3EC5",
+          "exerciseName": "Bankdrücken",
+          "sets": [
+            {
+              "reps": 9,
+              "setNumber": 1,
+              "weight": 70.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 70.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 3,
+              "weight": 70.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 7,
+              "setNumber": 4,
+              "weight": 70.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-04T16:19:00Z",
+          "exerciseID": "8EF0A5BB-7BFA-4F87-B1C8-D107329D702D",
+          "exerciseName": "Schrägbankdrücken Kurzhantel",
+          "sets": [
+            {
+              "reps": 11,
+              "setNumber": 1,
+              "weight": 24,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 24,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 24,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-04T16:28:00Z",
+          "exerciseID": "CB8562ED-3777-4DF0-AE54-D38F33156FAA",
+          "exerciseName": "Schulterdrücken Kurzhantel",
+          "sets": [
+            {
+              "reps": 11,
+              "setNumber": 1,
+              "weight": 18,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 18,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 18,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-04T16:37:00Z",
+          "exerciseID": "3067BE47-1F8B-43DA-A967-FC7762B14CEE",
+          "exerciseName": "Seitheben Kurzhantel",
+          "sets": [
+            {
+              "reps": 13,
+              "setNumber": 1,
+              "weight": 10,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 10,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 3,
+              "weight": 10,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-04T16:46:00Z",
+          "exerciseID": "16204341-7E0F-464A-96B3-8BE3270C5ADC",
+          "exerciseName": "Trizepsdrücken Kabel",
+          "sets": [
+            {
+              "reps": 13,
+              "setNumber": 1,
+              "weight": 30.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 30.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 11,
+              "setNumber": 3,
+              "weight": 30.0,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Push",
+      "planID": "0",
+      "planName": "Push"
+    },
+    {
+      "date": "2026-08-06T16:05:00Z",
+      "duration": 3000,
+      "entries": [
+        {
+          "date": "2026-08-06T16:10:00Z",
+          "exerciseID": "ADE2F5C0-E11C-4B27-86C2-5C7334F90039",
+          "exerciseName": "Kreuzheben",
+          "sets": [
+            {
+              "reps": 7,
+              "setNumber": 1,
+              "weight": 110,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 2,
+              "weight": 110,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 3,
+              "weight": 110,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 5,
+              "setNumber": 4,
+              "weight": 110,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-06T16:19:00Z",
+          "exerciseID": "7F5FC392-C735-4E1D-865B-D00001149C11",
+          "exerciseName": "Latzug breit",
+          "sets": [
+            {
+              "reps": 11,
+              "setNumber": 1,
+              "weight": 60.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 60.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 60.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 4,
+              "weight": 60.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-06T16:28:00Z",
+          "exerciseID": "EA9B7077-5392-4BED-B3BF-BA712AB4C008",
+          "exerciseName": "Rudern Langhantel",
+          "sets": [
+            {
+              "reps": 9,
+              "setNumber": 1,
+              "weight": 60.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 60.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 7,
+              "setNumber": 3,
+              "weight": 60.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-06T16:37:00Z",
+          "exerciseID": "75F027F5-3A50-4602-ABBF-615CE63DBF56",
+          "exerciseName": "Face Pulls",
+          "sets": [
+            {
+              "reps": 16,
+              "setNumber": 1,
+              "weight": 25.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 2,
+              "weight": 25.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 14,
+              "setNumber": 3,
+              "weight": 25.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-06T16:46:00Z",
+          "exerciseID": "6539DBE7-F40A-4BD8-B4AD-41E0817E854C",
+          "exerciseName": "Bizeps-Curls Kurzhantel",
+          "sets": [
+            {
+              "reps": 11,
+              "setNumber": 1,
+              "weight": 14,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 14,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 14,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Pull",
+      "planID": "1",
+      "planName": "Pull"
+    },
+    {
+      "date": "2026-08-08T16:05:00Z",
+      "duration": 3960,
+      "entries": [
+        {
+          "date": "2026-08-08T16:10:00Z",
+          "exerciseID": "FE930C14-D750-4A02-8E46-912D23CA6BB2",
+          "exerciseName": "Kniebeugen",
+          "sets": [
+            {
+              "reps": 7,
+              "setNumber": 1,
+              "weight": 90.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 2,
+              "weight": 90.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 3,
+              "weight": 90.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 4,
+              "weight": 90.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-08T16:19:00Z",
+          "exerciseID": "2F7D5324-5DB2-4A78-814A-F921AE50D95A",
+          "exerciseName": "Beinpresse",
+          "sets": [
+            {
+              "reps": 11,
+              "setNumber": 1,
+              "weight": 160,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 160,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 160,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 4,
+              "weight": 160,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-08T16:28:00Z",
+          "exerciseID": "1FCE1B3C-0751-4071-8E2C-486969DF3B7E",
+          "exerciseName": "Rumänisches Kreuzheben",
+          "sets": [
+            {
+              "reps": 9,
+              "setNumber": 1,
+              "weight": 80.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 80.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 7,
+              "setNumber": 3,
+              "weight": 80.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-08T16:37:00Z",
+          "exerciseID": "DB15B406-E5D6-48B9-9B6B-CB11C1A0F5A3",
+          "exerciseName": "Beinstrecker",
+          "sets": [
+            {
+              "reps": 13,
+              "setNumber": 1,
+              "weight": 45.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 45.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 11,
+              "setNumber": 3,
+              "weight": 45.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-08T16:46:00Z",
+          "exerciseID": "3A4C2F21-8A5F-4E2E-837A-4E1606CB90AA",
+          "exerciseName": "Wadenheben stehend",
+          "sets": [
+            {
+              "reps": 16,
+              "setNumber": 1,
+              "weight": 60,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 2,
+              "weight": 60,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 14,
+              "setNumber": 3,
+              "weight": 60,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Legs",
+      "planID": "2",
+      "planName": "Legs"
+    },
+    {
+      "date": "2026-08-11T16:05:00Z",
+      "duration": 3960,
+      "entries": [
+        {
+          "date": "2026-08-11T16:10:00Z",
+          "exerciseID": "4F98294C-8D9E-4410-9E62-FEC1ADBC3EC5",
+          "exerciseName": "Bankdrücken",
+          "sets": [
+            {
+              "reps": 8,
+              "setNumber": 1,
+              "weight": 72.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 72.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 3,
+              "weight": 72.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 7,
+              "setNumber": 4,
+              "weight": 72.5,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-11T16:19:00Z",
+          "exerciseID": "8EF0A5BB-7BFA-4F87-B1C8-D107329D702D",
+          "exerciseName": "Schrägbankdrücken Kurzhantel",
+          "sets": [
+            {
+              "reps": 10,
+              "setNumber": 1,
+              "weight": 26,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 26,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 26,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-11T16:28:00Z",
+          "exerciseID": "CB8562ED-3777-4DF0-AE54-D38F33156FAA",
+          "exerciseName": "Schulterdrücken Kurzhantel",
+          "sets": [
+            {
+              "reps": 10,
+              "setNumber": 1,
+              "weight": 20,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 20,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 3,
+              "weight": 20,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-11T16:37:00Z",
+          "exerciseID": "3067BE47-1F8B-43DA-A967-FC7762B14CEE",
+          "exerciseName": "Seitheben Kurzhantel",
+          "sets": [
+            {
+              "reps": 12,
+              "setNumber": 1,
+              "weight": 11,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 11,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 11,
+              "setNumber": 3,
+              "weight": 11,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-11T16:46:00Z",
+          "exerciseID": "16204341-7E0F-464A-96B3-8BE3270C5ADC",
+          "exerciseName": "Trizepsdrücken Kabel",
+          "sets": [
+            {
+              "reps": 12,
+              "setNumber": 1,
+              "weight": 32.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 32.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 11,
+              "setNumber": 3,
+              "weight": 32.5,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Push",
+      "planID": "0",
+      "planName": "Push"
+    },
+    {
+      "date": "2026-08-13T16:05:00Z",
+      "duration": 3780,
+      "entries": [
+        {
+          "date": "2026-08-13T16:10:00Z",
+          "exerciseID": "ADE2F5C0-E11C-4B27-86C2-5C7334F90039",
+          "exerciseName": "Kreuzheben",
+          "sets": [
+            {
+              "reps": 6,
+              "setNumber": 1,
+              "weight": 115,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 2,
+              "weight": 115,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 3,
+              "weight": 115,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 5,
+              "setNumber": 4,
+              "weight": 115,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-13T16:19:00Z",
+          "exerciseID": "7F5FC392-C735-4E1D-865B-D00001149C11",
+          "exerciseName": "Latzug breit",
+          "sets": [
+            {
+              "reps": 10,
+              "setNumber": 1,
+              "weight": 62.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 62.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 62.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 4,
+              "weight": 62.5,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-13T16:28:00Z",
+          "exerciseID": "EA9B7077-5392-4BED-B3BF-BA712AB4C008",
+          "exerciseName": "Rudern Langhantel",
+          "sets": [
+            {
+              "reps": 8,
+              "setNumber": 1,
+              "weight": 62.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 62.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 7,
+              "setNumber": 3,
+              "weight": 62.5,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-13T16:37:00Z",
+          "exerciseID": "75F027F5-3A50-4602-ABBF-615CE63DBF56",
+          "exerciseName": "Face Pulls",
+          "sets": [
+            {
+              "reps": 15,
+              "setNumber": 1,
+              "weight": 27.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 2,
+              "weight": 27.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 3,
+              "weight": 27.5,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-13T16:46:00Z",
+          "exerciseID": "6539DBE7-F40A-4BD8-B4AD-41E0817E854C",
+          "exerciseName": "Bizeps-Curls Kurzhantel",
+          "sets": [
+            {
+              "reps": 10,
+              "setNumber": 1,
+              "weight": 15,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 15,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 15,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Pull",
+      "planID": "1",
+      "planName": "Pull"
+    },
+    {
+      "date": "2026-08-15T16:05:00Z",
+      "duration": 3840,
+      "entries": [
+        {
+          "date": "2026-08-15T16:10:00Z",
+          "exerciseID": "FE930C14-D750-4A02-8E46-912D23CA6BB2",
+          "exerciseName": "Kniebeugen",
+          "sets": [
+            {
+              "reps": 6,
+              "setNumber": 1,
+              "weight": 92.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 2,
+              "weight": 92.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 3,
+              "weight": 92.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 5,
+              "setNumber": 4,
+              "weight": 92.5,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-15T16:19:00Z",
+          "exerciseID": "2F7D5324-5DB2-4A78-814A-F921AE50D95A",
+          "exerciseName": "Beinpresse",
+          "sets": [
+            {
+              "reps": 10,
+              "setNumber": 1,
+              "weight": 165,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 165,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 165,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 4,
+              "weight": 165,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-15T16:28:00Z",
+          "exerciseID": "1FCE1B3C-0751-4071-8E2C-486969DF3B7E",
+          "exerciseName": "Rumänisches Kreuzheben",
+          "sets": [
+            {
+              "reps": 8,
+              "setNumber": 1,
+              "weight": 82.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 82.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 3,
+              "weight": 82.5,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-15T16:37:00Z",
+          "exerciseID": "DB15B406-E5D6-48B9-9B6B-CB11C1A0F5A3",
+          "exerciseName": "Beinstrecker",
+          "sets": [
+            {
+              "reps": 12,
+              "setNumber": 1,
+              "weight": 47.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 47.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 11,
+              "setNumber": 3,
+              "weight": 47.5,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-15T16:46:00Z",
+          "exerciseID": "3A4C2F21-8A5F-4E2E-837A-4E1606CB90AA",
+          "exerciseName": "Wadenheben stehend",
+          "sets": [
+            {
+              "reps": 15,
+              "setNumber": 1,
+              "weight": 65,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 2,
+              "weight": 65,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 3,
+              "weight": 65,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Legs",
+      "planID": "2",
+      "planName": "Legs"
+    },
+    {
+      "date": "2026-08-18T16:05:00Z",
+      "duration": 3840,
+      "entries": [
+        {
+          "date": "2026-08-18T16:10:00Z",
+          "exerciseID": "4F98294C-8D9E-4410-9E62-FEC1ADBC3EC5",
+          "exerciseName": "Bankdrücken",
+          "sets": [
+            {
+              "reps": 9,
+              "setNumber": 1,
+              "weight": 72.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 72.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 3,
+              "weight": 72.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 7,
+              "setNumber": 4,
+              "weight": 72.5,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-18T16:19:00Z",
+          "exerciseID": "8EF0A5BB-7BFA-4F87-B1C8-D107329D702D",
+          "exerciseName": "Schrägbankdrücken Kurzhantel",
+          "sets": [
+            {
+              "reps": 11,
+              "setNumber": 1,
+              "weight": 26,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 26,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 3,
+              "weight": 26,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-18T16:28:00Z",
+          "exerciseID": "CB8562ED-3777-4DF0-AE54-D38F33156FAA",
+          "exerciseName": "Schulterdrücken Kurzhantel",
+          "sets": [
+            {
+              "reps": 11,
+              "setNumber": 1,
+              "weight": 20,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 20,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 3,
+              "weight": 20,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-18T16:37:00Z",
+          "exerciseID": "3067BE47-1F8B-43DA-A967-FC7762B14CEE",
+          "exerciseName": "Seitheben Kurzhantel",
+          "sets": [
+            {
+              "reps": 13,
+              "setNumber": 1,
+              "weight": 11,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 11,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 11,
+              "setNumber": 3,
+              "weight": 11,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-18T16:46:00Z",
+          "exerciseID": "16204341-7E0F-464A-96B3-8BE3270C5ADC",
+          "exerciseName": "Trizepsdrücken Kabel",
+          "sets": [
+            {
+              "reps": 13,
+              "setNumber": 1,
+              "weight": 32.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 32.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 11,
+              "setNumber": 3,
+              "weight": 32.5,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Push",
+      "planID": "0",
+      "planName": "Push"
+    },
+    {
+      "date": "2026-08-20T16:05:00Z",
+      "duration": 3300,
+      "entries": [
+        {
+          "date": "2026-08-20T16:10:00Z",
+          "exerciseID": "ADE2F5C0-E11C-4B27-86C2-5C7334F90039",
+          "exerciseName": "Kreuzheben",
+          "sets": [
+            {
+              "reps": 7,
+              "setNumber": 1,
+              "weight": 115,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 2,
+              "weight": 115,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 3,
+              "weight": 115,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 4,
+              "weight": 115,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-20T16:19:00Z",
+          "exerciseID": "7F5FC392-C735-4E1D-865B-D00001149C11",
+          "exerciseName": "Latzug breit",
+          "sets": [
+            {
+              "reps": 11,
+              "setNumber": 1,
+              "weight": 62.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 62.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 62.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 4,
+              "weight": 62.5,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-20T16:28:00Z",
+          "exerciseID": "EA9B7077-5392-4BED-B3BF-BA712AB4C008",
+          "exerciseName": "Rudern Langhantel",
+          "sets": [
+            {
+              "reps": 9,
+              "setNumber": 1,
+              "weight": 62.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 62.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 3,
+              "weight": 62.5,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-20T16:37:00Z",
+          "exerciseID": "75F027F5-3A50-4602-ABBF-615CE63DBF56",
+          "exerciseName": "Face Pulls",
+          "sets": [
+            {
+              "reps": 16,
+              "setNumber": 1,
+              "weight": 27.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 2,
+              "weight": 27.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 14,
+              "setNumber": 3,
+              "weight": 27.5,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-20T16:46:00Z",
+          "exerciseID": "6539DBE7-F40A-4BD8-B4AD-41E0817E854C",
+          "exerciseName": "Bizeps-Curls Kurzhantel",
+          "sets": [
+            {
+              "reps": 11,
+              "setNumber": 1,
+              "weight": 15,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 15,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 3,
+              "weight": 15,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Pull",
+      "planID": "1",
+      "planName": "Pull"
+    },
+    {
+      "date": "2026-08-22T16:05:00Z",
+      "duration": 3900,
+      "entries": [
+        {
+          "date": "2026-08-22T16:10:00Z",
+          "exerciseID": "FE930C14-D750-4A02-8E46-912D23CA6BB2",
+          "exerciseName": "Kniebeugen",
+          "sets": [
+            {
+              "reps": 7,
+              "setNumber": 1,
+              "weight": 92.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 2,
+              "weight": 92.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 3,
+              "weight": 92.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 4,
+              "weight": 92.5,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-22T16:19:00Z",
+          "exerciseID": "2F7D5324-5DB2-4A78-814A-F921AE50D95A",
+          "exerciseName": "Beinpresse",
+          "sets": [
+            {
+              "reps": 11,
+              "setNumber": 1,
+              "weight": 165,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 165,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 165,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 4,
+              "weight": 165,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-22T16:28:00Z",
+          "exerciseID": "1FCE1B3C-0751-4071-8E2C-486969DF3B7E",
+          "exerciseName": "Rumänisches Kreuzheben",
+          "sets": [
+            {
+              "reps": 9,
+              "setNumber": 1,
+              "weight": 82.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 82.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 3,
+              "weight": 82.5,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-22T16:37:00Z",
+          "exerciseID": "DB15B406-E5D6-48B9-9B6B-CB11C1A0F5A3",
+          "exerciseName": "Beinstrecker",
+          "sets": [
+            {
+              "reps": 13,
+              "setNumber": 1,
+              "weight": 47.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 47.5,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 3,
+              "weight": 47.5,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-22T16:46:00Z",
+          "exerciseID": "3A4C2F21-8A5F-4E2E-837A-4E1606CB90AA",
+          "exerciseName": "Wadenheben stehend",
+          "sets": [
+            {
+              "reps": 16,
+              "setNumber": 1,
+              "weight": 65,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 2,
+              "weight": 65,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 3,
+              "weight": 65,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Legs",
+      "planID": "2",
+      "planName": "Legs"
+    },
+    {
+      "date": "2026-08-25T16:05:00Z",
+      "duration": 3780,
+      "entries": [
+        {
+          "date": "2026-08-25T16:10:00Z",
+          "exerciseID": "4F98294C-8D9E-4410-9E62-FEC1ADBC3EC5",
+          "exerciseName": "Bankdrücken",
+          "sets": [
+            {
+              "reps": 8,
+              "setNumber": 1,
+              "weight": 75.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 75.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 3,
+              "weight": 75.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 7,
+              "setNumber": 4,
+              "weight": 75.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-25T16:19:00Z",
+          "exerciseID": "8EF0A5BB-7BFA-4F87-B1C8-D107329D702D",
+          "exerciseName": "Schrägbankdrücken Kurzhantel",
+          "sets": [
+            {
+              "reps": 10,
+              "setNumber": 1,
+              "weight": 28,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 28,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 3,
+              "weight": 28,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-25T16:28:00Z",
+          "exerciseID": "CB8562ED-3777-4DF0-AE54-D38F33156FAA",
+          "exerciseName": "Schulterdrücken Kurzhantel",
+          "sets": [
+            {
+              "reps": 10,
+              "setNumber": 1,
+              "weight": 22,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 22,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 22,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-25T16:37:00Z",
+          "exerciseID": "3067BE47-1F8B-43DA-A967-FC7762B14CEE",
+          "exerciseName": "Seitheben Kurzhantel",
+          "sets": [
+            {
+              "reps": 12,
+              "setNumber": 1,
+              "weight": 12,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 12,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 11,
+              "setNumber": 3,
+              "weight": 12,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-25T16:46:00Z",
+          "exerciseID": "16204341-7E0F-464A-96B3-8BE3270C5ADC",
+          "exerciseName": "Trizepsdrücken Kabel",
+          "sets": [
+            {
+              "reps": 12,
+              "setNumber": 1,
+              "weight": 35.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 35.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 3,
+              "weight": 35.0,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Push",
+      "planID": "0",
+      "planName": "Push"
+    },
+    {
+      "date": "2026-08-27T16:05:00Z",
+      "duration": 3120,
+      "entries": [
+        {
+          "date": "2026-08-27T16:10:00Z",
+          "exerciseID": "ADE2F5C0-E11C-4B27-86C2-5C7334F90039",
+          "exerciseName": "Kreuzheben",
+          "sets": [
+            {
+              "reps": 6,
+              "setNumber": 1,
+              "weight": 120,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 2,
+              "weight": 120,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 3,
+              "weight": 120,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 4,
+              "weight": 120,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-27T16:19:00Z",
+          "exerciseID": "7F5FC392-C735-4E1D-865B-D00001149C11",
+          "exerciseName": "Latzug breit",
+          "sets": [
+            {
+              "reps": 10,
+              "setNumber": 1,
+              "weight": 65.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 65.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 65.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 4,
+              "weight": 65.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-27T16:28:00Z",
+          "exerciseID": "EA9B7077-5392-4BED-B3BF-BA712AB4C008",
+          "exerciseName": "Rudern Langhantel",
+          "sets": [
+            {
+              "reps": 8,
+              "setNumber": 1,
+              "weight": 65.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 65.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 7,
+              "setNumber": 3,
+              "weight": 65.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-27T16:37:00Z",
+          "exerciseID": "75F027F5-3A50-4602-ABBF-615CE63DBF56",
+          "exerciseName": "Face Pulls",
+          "sets": [
+            {
+              "reps": 15,
+              "setNumber": 1,
+              "weight": 30.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 2,
+              "weight": 30.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 3,
+              "weight": 30.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-27T16:46:00Z",
+          "exerciseID": "6539DBE7-F40A-4BD8-B4AD-41E0817E854C",
+          "exerciseName": "Bizeps-Curls Kurzhantel",
+          "sets": [
+            {
+              "reps": 10,
+              "setNumber": 1,
+              "weight": 16,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 16,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 3,
+              "weight": 16,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Pull",
+      "planID": "1",
+      "planName": "Pull"
+    },
+    {
+      "date": "2026-08-29T16:05:00Z",
+      "duration": 3240,
+      "entries": [
+        {
+          "date": "2026-08-29T16:10:00Z",
+          "exerciseID": "FE930C14-D750-4A02-8E46-912D23CA6BB2",
+          "exerciseName": "Kniebeugen",
+          "sets": [
+            {
+              "reps": 6,
+              "setNumber": 1,
+              "weight": 95.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 2,
+              "weight": 95.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 3,
+              "weight": 95.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 4,
+              "weight": 95.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-29T16:19:00Z",
+          "exerciseID": "2F7D5324-5DB2-4A78-814A-F921AE50D95A",
+          "exerciseName": "Beinpresse",
+          "sets": [
+            {
+              "reps": 10,
+              "setNumber": 1,
+              "weight": 170,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 170,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 170,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 4,
+              "weight": 170,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-29T16:28:00Z",
+          "exerciseID": "1FCE1B3C-0751-4071-8E2C-486969DF3B7E",
+          "exerciseName": "Rumänisches Kreuzheben",
+          "sets": [
+            {
+              "reps": 8,
+              "setNumber": 1,
+              "weight": 85.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 85.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 7,
+              "setNumber": 3,
+              "weight": 85.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-29T16:37:00Z",
+          "exerciseID": "DB15B406-E5D6-48B9-9B6B-CB11C1A0F5A3",
+          "exerciseName": "Beinstrecker",
+          "sets": [
+            {
+              "reps": 12,
+              "setNumber": 1,
+              "weight": 50.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 50.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 11,
+              "setNumber": 3,
+              "weight": 50.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-08-29T16:46:00Z",
+          "exerciseID": "3A4C2F21-8A5F-4E2E-837A-4E1606CB90AA",
+          "exerciseName": "Wadenheben stehend",
+          "sets": [
+            {
+              "reps": 15,
+              "setNumber": 1,
+              "weight": 70,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 2,
+              "weight": 70,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 14,
+              "setNumber": 3,
+              "weight": 70,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Legs",
+      "planID": "2",
+      "planName": "Legs"
+    },
+    {
+      "date": "2026-09-01T16:05:00Z",
+      "duration": 3900,
+      "entries": [
+        {
+          "date": "2026-09-01T16:10:00Z",
+          "exerciseID": "4F98294C-8D9E-4410-9E62-FEC1ADBC3EC5",
+          "exerciseName": "Bankdrücken",
+          "sets": [
+            {
+              "reps": 9,
+              "setNumber": 1,
+              "weight": 75.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 75.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 3,
+              "weight": 75.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 7,
+              "setNumber": 4,
+              "weight": 75.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-09-01T16:19:00Z",
+          "exerciseID": "8EF0A5BB-7BFA-4F87-B1C8-D107329D702D",
+          "exerciseName": "Schrägbankdrücken Kurzhantel",
+          "sets": [
+            {
+              "reps": 11,
+              "setNumber": 1,
+              "weight": 28,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 28,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 3,
+              "weight": 28,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-09-01T16:28:00Z",
+          "exerciseID": "CB8562ED-3777-4DF0-AE54-D38F33156FAA",
+          "exerciseName": "Schulterdrücken Kurzhantel",
+          "sets": [
+            {
+              "reps": 11,
+              "setNumber": 1,
+              "weight": 22,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 22,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 3,
+              "weight": 22,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-09-01T16:37:00Z",
+          "exerciseID": "3067BE47-1F8B-43DA-A967-FC7762B14CEE",
+          "exerciseName": "Seitheben Kurzhantel",
+          "sets": [
+            {
+              "reps": 13,
+              "setNumber": 1,
+              "weight": 12,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 12,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 3,
+              "weight": 12,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-09-01T16:46:00Z",
+          "exerciseID": "16204341-7E0F-464A-96B3-8BE3270C5ADC",
+          "exerciseName": "Trizepsdrücken Kabel",
+          "sets": [
+            {
+              "reps": 13,
+              "setNumber": 1,
+              "weight": 35.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 35.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 3,
+              "weight": 35.0,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Push",
+      "planID": "0",
+      "planName": "Push"
+    },
+    {
+      "date": "2026-09-03T16:05:00Z",
+      "duration": 3720,
+      "entries": [
+        {
+          "date": "2026-09-03T16:10:00Z",
+          "exerciseID": "ADE2F5C0-E11C-4B27-86C2-5C7334F90039",
+          "exerciseName": "Kreuzheben",
+          "sets": [
+            {
+              "reps": 7,
+              "setNumber": 1,
+              "weight": 120,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 2,
+              "weight": 120,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 3,
+              "weight": 120,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 4,
+              "weight": 120,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-09-03T16:19:00Z",
+          "exerciseID": "7F5FC392-C735-4E1D-865B-D00001149C11",
+          "exerciseName": "Latzug breit",
+          "sets": [
+            {
+              "reps": 11,
+              "setNumber": 1,
+              "weight": 65.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 65.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 65.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 9,
+              "setNumber": 4,
+              "weight": 65.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-09-03T16:28:00Z",
+          "exerciseID": "EA9B7077-5392-4BED-B3BF-BA712AB4C008",
+          "exerciseName": "Rudern Langhantel",
+          "sets": [
+            {
+              "reps": 9,
+              "setNumber": 1,
+              "weight": 65.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 65.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 7,
+              "setNumber": 3,
+              "weight": 65.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-09-03T16:37:00Z",
+          "exerciseID": "75F027F5-3A50-4602-ABBF-615CE63DBF56",
+          "exerciseName": "Face Pulls",
+          "sets": [
+            {
+              "reps": 16,
+              "setNumber": 1,
+              "weight": 30.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 2,
+              "weight": 30.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 14,
+              "setNumber": 3,
+              "weight": 30.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-09-03T16:46:00Z",
+          "exerciseID": "6539DBE7-F40A-4BD8-B4AD-41E0817E854C",
+          "exerciseName": "Bizeps-Curls Kurzhantel",
+          "sets": [
+            {
+              "reps": 11,
+              "setNumber": 1,
+              "weight": 16,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 16,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 16,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Pull",
+      "planID": "1",
+      "planName": "Pull"
+    },
+    {
+      "date": "2026-09-05T16:05:00Z",
+      "duration": 3660,
+      "entries": [
+        {
+          "date": "2026-09-05T16:10:00Z",
+          "exerciseID": "FE930C14-D750-4A02-8E46-912D23CA6BB2",
+          "exerciseName": "Kniebeugen",
+          "sets": [
+            {
+              "reps": 7,
+              "setNumber": 1,
+              "weight": 95.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 2,
+              "weight": 95.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 3,
+              "weight": 95.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 6,
+              "setNumber": 4,
+              "weight": 95.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-09-05T16:19:00Z",
+          "exerciseID": "2F7D5324-5DB2-4A78-814A-F921AE50D95A",
+          "exerciseName": "Beinpresse",
+          "sets": [
+            {
+              "reps": 11,
+              "setNumber": 1,
+              "weight": 170,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 2,
+              "weight": 170,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 3,
+              "weight": 170,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 10,
+              "setNumber": 4,
+              "weight": 170,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-09-05T16:28:00Z",
+          "exerciseID": "1FCE1B3C-0751-4071-8E2C-486969DF3B7E",
+          "exerciseName": "Rumänisches Kreuzheben",
+          "sets": [
+            {
+              "reps": 9,
+              "setNumber": 1,
+              "weight": 85.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 8,
+              "setNumber": 2,
+              "weight": 85.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 7,
+              "setNumber": 3,
+              "weight": 85.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-09-05T16:37:00Z",
+          "exerciseID": "DB15B406-E5D6-48B9-9B6B-CB11C1A0F5A3",
+          "exerciseName": "Beinstrecker",
+          "sets": [
+            {
+              "reps": 13,
+              "setNumber": 1,
+              "weight": 50.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 12,
+              "setNumber": 2,
+              "weight": 50.0,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 11,
+              "setNumber": 3,
+              "weight": 50.0,
+              "weightUnit": "kg"
+            }
+          ]
+        },
+        {
+          "date": "2026-09-05T16:46:00Z",
+          "exerciseID": "3A4C2F21-8A5F-4E2E-837A-4E1606CB90AA",
+          "exerciseName": "Wadenheben stehend",
+          "sets": [
+            {
+              "reps": 16,
+              "setNumber": 1,
+              "weight": 70,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 2,
+              "weight": 70,
+              "weightUnit": "kg"
+            },
+            {
+              "reps": 15,
+              "setNumber": 3,
+              "weight": 70,
+              "weightUnit": "kg"
+            }
+          ]
+        }
+      ],
+      "name": "Legs",
+      "planID": "2",
+      "planName": "Legs"
+    }
+  ]
+}

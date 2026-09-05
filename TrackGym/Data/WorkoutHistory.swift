@@ -40,9 +40,28 @@ enum WorkoutHistory {
         let activeID = activeWorkout?.persistentModelID
         return entries.first { entry in
             entry.exercise?.persistentModelID == exerciseID &&
+            // Entries without a workout are unsaved placeholders (see
+            // deleteOrphanedEntries) — never a real "last training".
+            entry.workout != nil &&
             !currentIDs.contains(entry.persistentModelID) &&
             (activeID == nil || entry.workout?.persistentModelID != activeID)
         }
+    }
+
+    /// The active workout inserts entries into the context before a Workout
+    /// exists and attaches them on save. If the app is killed mid-workout,
+    /// autosave has already written those placeholders and no code path
+    /// removes them again. Called once at launch; returns the number removed.
+    @discardableResult
+    static func deleteOrphanedEntries(in context: ModelContext) throws -> Int {
+        let descriptor = FetchDescriptor<WorkoutEntry>(predicate: #Predicate { $0.workout == nil })
+        let orphans = try context.fetch(descriptor)
+        guard !orphans.isEmpty else { return 0 }
+        for entry in orphans {
+            context.delete(entry)
+        }
+        try context.save()
+        return orphans.count
     }
 
     @discardableResult

@@ -43,6 +43,14 @@ struct TrackGymApp: App {
                     } catch {
                         Self.log.error("Exercise stable ID backfill failed: \(error.localizedDescription, privacy: .public)")
                     }
+                    do {
+                        let removed = try WorkoutHistory.deleteOrphanedEntries(in: modelContainer.mainContext)
+                        if removed > 0 {
+                            Self.log.notice("Removed \(removed) orphaned workout entries left by an interrupted workout")
+                        }
+                    } catch {
+                        Self.log.error("Orphaned entry cleanup failed: \(error.localizedDescription, privacy: .public)")
+                    }
                     PhoneConnectivityManager.shared.activate()
                 }
                 .modelContainer(modelContainer)

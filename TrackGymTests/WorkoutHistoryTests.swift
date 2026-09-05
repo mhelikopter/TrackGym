@@ -118,6 +118,46 @@ final class WorkoutHistoryTests: XCTestCase {
         XCTAssertEqual(result?.persistentModelID, older.persistentModelID)
     }
 
+    func test_previousEntry_ignoresEntriesWithoutWorkout() throws {
+        // A placeholder left behind by an interrupted workout carries today's
+        // date and would otherwise shadow the real last training.
+        let exercise = makeExercise("Bench Press")
+        let real = makeEntry(for: exercise, daysAgo: 3)
+        _ = makeOrphanEntry(for: exercise, daysAgo: 0)
+        try context.save()
+
+        let result = WorkoutHistory.previousEntry(for: exercise, in: context)
+        XCTAssertEqual(result?.persistentModelID, real.persistentModelID)
+    }
+
+    // MARK: - deleteOrphanedEntries
+
+    func test_deleteOrphanedEntries_removesOnlyEntriesWithoutWorkout() throws {
+        let exercise = makeExercise("Bench Press")
+        let kept = makeEntry(for: exercise, daysAgo: 1)
+        let orphan = makeOrphanEntry(for: exercise, daysAgo: 0)
+        let orphanSet = WorkoutSet(setNumber: 1, weight: 60, reps: 10, workoutEntry: orphan)
+        context.insert(orphanSet)
+        try context.save()
+
+        let removed = try WorkoutHistory.deleteOrphanedEntries(in: context)
+
+        XCTAssertEqual(removed, 1)
+        let entries = try context.fetch(FetchDescriptor<WorkoutEntry>())
+        XCTAssertEqual(entries.map(\.persistentModelID), [kept.persistentModelID])
+        // Cascade: the orphan's sets go with it.
+        XCTAssertEqual(try context.fetch(FetchDescriptor<WorkoutSet>()).count, 0)
+    }
+
+    func test_deleteOrphanedEntries_isNoOp_whenNothingIsOrphaned() throws {
+        let exercise = makeExercise("Bench Press")
+        _ = makeEntry(for: exercise, daysAgo: 1)
+        try context.save()
+
+        XCTAssertEqual(try WorkoutHistory.deleteOrphanedEntries(in: context), 0)
+        XCTAssertEqual(try context.fetch(FetchDescriptor<WorkoutEntry>()).count, 1)
+    }
+
     // MARK: - appendSet
 
     func test_appendSet_assignsSetNumberOne_whenEntryIsEmpty() throws {
@@ -175,7 +215,19 @@ final class WorkoutHistoryTests: XCTestCase {
         return exercise
     }
 
+    /// Creates a saved entry, i.e. one attached to a Workout. Entries without
+    /// a workout are unsaved placeholders and must never count as history.
     private func makeEntry(for exercise: Exercise, daysAgo: Int) -> WorkoutEntry {
+        let date = Calendar.current.date(byAdding: .day, value: -daysAgo, to: .now) ?? .now
+        let workout = Workout(name: "Session", date: date)
+        context.insert(workout)
+        let entry = WorkoutEntry(date: date, exercise: exercise)
+        context.insert(entry)
+        entry.workout = workout
+        return entry
+    }
+
+    private func makeOrphanEntry(for exercise: Exercise, daysAgo: Int) -> WorkoutEntry {
         let date = Calendar.current.date(byAdding: .day, value: -daysAgo, to: .now) ?? .now
         let entry = WorkoutEntry(date: date, exercise: exercise)
         context.insert(entry)

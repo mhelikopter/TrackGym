@@ -179,7 +179,7 @@ private struct OverallProgressView: View {
                 }
 
                 Section("Zusammenfassung") {
-                    StatRow(icon: "calendar", label: "Trainingstage", value: "\(totalWorkouts)")
+                    StatRow(icon: "calendar", label: "Trainings", value: "\(totalWorkouts)")
                     StatRow(icon: "scalemass.fill", label: "Gesamtvolumen", value: formatWeight(totalVolume))
                     StatRow(icon: "chart.bar.fill", label: "Ø Volumen pro Training", value: formatWeight(averageVolume))
                     StatRow(icon: "dumbbell.fill", label: "Übungen trainiert", value: "\(exercises.count)")

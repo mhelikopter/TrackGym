@@ -19,6 +19,13 @@ struct ActiveWorkoutView: View {
     @State private var previousEntries: [PersistentIdentifier: WorkoutEntry] = [:]
     @State private var restEndDate: Date?
 
+    /// Entries the user actually worked on: a set added, edited, deleted, or
+    /// logged from the watch. "Beenden & speichern" persists only these;
+    /// untouched pre-filled placeholders are discarded instead of being
+    /// written to history as if they had been performed.
+    @State private var touchedEntryIDs: Set<PersistentIdentifier> = []
+    @State private var watchPushTask: Task<Void, Never>?
+
     @State private var startTime = Date()
 
     private func elapsedSeconds(now: Date) -> Int {
@@ -97,6 +104,7 @@ struct ActiveWorkoutView: View {
                                                     .foregroundStyle(.secondary)
                                             }
                                             .buttonStyle(.plain)
+                                            .accessibilityLabel("Pause überspringen")
                                         }
                                     }
                                 }
@@ -110,10 +118,18 @@ struct ActiveWorkoutView: View {
                                 entry: entry,
                                 previousEntry: cachedPreviousEntry(for: entry.exercise),
                                 onSave: { saveEntry(entry) },
-                                onSetsChanged: { sendCurrentExerciseToWatch() },
+                                onSetsChanged: {
+                                    markTouched(entry)
+                                    sendCurrentExerciseToWatch()
+                                },
                                 onSetLogged: {
+                                    markTouched(entry)
                                     startRestTimer()
                                     sendCurrentExerciseToWatch()
+                                },
+                                onSetEdited: {
+                                    markTouched(entry)
+                                    scheduleWatchPush()
                                 }
                             )
                         }
@@ -146,7 +162,11 @@ struct ActiveWorkoutView: View {
                 }
             }
             .onAppear {
-                startTime = Date()
+                // onAppear can fire again after a sheet is dismissed; the
+                // timer must only start once per workout.
+                if workoutEntries.isEmpty && activeWorkout == nil {
+                    startTime = Date()
+                }
                 setupExercises()
                 sendCurrentExerciseToWatch()
                 registerWatchAddSetHandler()
@@ -176,7 +196,7 @@ struct ActiveWorkoutView: View {
                 Button("Beenden & speichern") { finishAllAndEnd() }
                 Button("Weiter trainieren", role: .cancel) {}
             } message: {
-                Text("Alle verbleibenden Übungen werden gespeichert.")
+                Text(finishAlertMessage)
             }
             .alert("Training konnte nicht gespeichert werden", isPresented: $showingPersistenceError) {
                 Button("OK") {}
@@ -200,8 +220,31 @@ struct ActiveWorkoutView: View {
         // is dismissed or the app returns from background). Without this, the
         // plan's exercises get appended again, creating duplicate entries.
         guard workoutEntries.isEmpty && activeWorkout == nil else { return }
-        for exercise in plan.exercises {
+        for exercise in plan.orderedExercises {
             addExercise(exercise)
+        }
+    }
+
+    private func markTouched(_ entry: WorkoutEntry) {
+        touchedEntryIDs.insert(entry.persistentModelID)
+    }
+
+    private var untouchedEntries: [WorkoutEntry] {
+        workoutEntries.filter { !touchedEntryIDs.contains($0.persistentModelID) }
+    }
+
+    private var finishAlertMessage: String {
+        let untouched = untouchedEntries.count
+        let touched = workoutEntries.count - untouched
+        switch (touched, untouched) {
+        case (0, 0):
+            return "Das Training wird beendet."
+        case (_, 0):
+            return "Alle verbleibenden Übungen werden gespeichert."
+        case (0, _):
+            return "Keine Übung wurde bearbeitet — es wird nichts gespeichert."
+        default:
+            return "\(touched) bearbeitete \(touched == 1 ? "Übung wird" : "Übungen werden") gespeichert. \(untouched) nicht bearbeitete \(untouched == 1 ? "Übung wird" : "Übungen werden") verworfen."
         }
     }
 
@@ -274,7 +317,15 @@ struct ActiveWorkoutView: View {
 
     private func finishAllAndEnd() {
         let seconds = elapsedSeconds(now: Date())
-        if activeWorkout == nil && !workoutEntries.isEmpty {
+        // Placeholders the user never touched are not a performed workout —
+        // they would land in history, volume stats and the PR badge with
+        // last time's numbers (or 0 kg × 0). Drop them.
+        for entry in untouchedEntries {
+            modelContext.delete(entry)
+        }
+        let touched = workoutEntries.filter { touchedEntryIDs.contains($0.persistentModelID) }
+
+        if activeWorkout == nil && !touched.isEmpty {
             let workout = Workout(name: plan.name, date: workoutDate, duration: seconds)
             workout.plan = plan
             modelContext.insert(workout)
@@ -282,9 +333,14 @@ struct ActiveWorkoutView: View {
         } else {
             activeWorkout?.duration = seconds
         }
-        for entry in workoutEntries {
+        for entry in touched {
             entry.date = workoutDate
             entry.workout = activeWorkout
+        }
+        // Nothing was ever saved or touched: an empty workout must not persist.
+        if let workout = activeWorkout, workout.entries.isEmpty {
+            modelContext.delete(workout)
+            activeWorkout = nil
         }
 
         guard persistWorkoutChanges() else { return }
@@ -340,9 +396,21 @@ struct ActiveWorkoutView: View {
         )
     }
 
+    /// Weight/rep edits arrive per keystroke; coalesce them so the watch gets
+    /// one push per pause in typing instead of one per digit.
+    private func scheduleWatchPush() {
+        watchPushTask?.cancel()
+        watchPushTask = Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(300))
+            guard !Task.isCancelled else { return }
+            sendCurrentExerciseToWatch()
+        }
+    }
+
     private func addSetFromWatch(to entry: WorkoutEntry, weight: Double, reps: Int) {
         let selectedUnit = WeightUnit.resolved(from: weightUnit)
         WorkoutHistory.appendSet(weight: selectedUnit.kilograms(from: weight), reps: reps, to: entry, in: modelContext)
+        markTouched(entry)
         startRestTimer()
         sendCurrentExerciseToWatch()
     }
@@ -395,6 +463,8 @@ private struct ActiveEntrySection: View {
     let onSetsChanged: () -> Void
     /// Feuert, wenn ein neuer Satz angelegt wurde (startet die Pause).
     let onSetLogged: () -> Void
+    /// Feuert bei jeder Gewichts-/Wiederholungs-Eingabe in einem Satz.
+    let onSetEdited: () -> Void
 
     var body: some View {
         Section {
@@ -407,7 +477,7 @@ private struct ActiveEntrySection: View {
             }
 
             ForEach(entry.sortedSets) { set in
-                ActiveSetRow(set: set)
+                ActiveSetRow(set: set, onEdit: onSetEdited)
             }
             .onDelete { offsets in
                 deleteSets(at: offsets)
@@ -433,6 +503,7 @@ private struct ActiveEntrySection: View {
                         .foregroundStyle(.green)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("\(entry.exercise?.name ?? "Übung") speichern")
             }
             .textCase(nil)
         }
@@ -470,6 +541,7 @@ private struct ActiveEntrySection: View {
 private struct ActiveSetRow: View {
     @AppStorage("weightUnit") private var weightUnit: String = WeightUnit.kg.rawValue
     @Bindable var set: WorkoutSet
+    let onEdit: () -> Void
 
     private var selectedUnit: WeightUnit {
         WeightUnit.resolved(from: weightUnit)
@@ -509,6 +581,8 @@ private struct ActiveSetRow: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .onChange(of: set.weight) { _, _ in onEdit() }
+        .onChange(of: set.reps) { _, _ in onEdit() }
     }
 }
 
